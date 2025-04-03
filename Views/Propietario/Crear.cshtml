@@ -1,0 +1,69 @@
+@model InmobiliariaApp.Models.Propietario
+
+@{
+    ViewData["Title"] = "Ingresar Propietario";
+}
+
+<!-- Toastr CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<!-- jQuery y Toastr JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+
+
+<h1 class="text-center mb-4">Ingresar nuevo propietario</h1>
+
+
+<form asp-action="Insertar">
+    <div class="d-flex flex-column gap-2 justify-content-center align-items-center">
+        <div class="dni">
+            <label for="">DNI</label>
+            <input type="text" name="DNIPropietario" id="" placeholder="Ingrese el DNI del propietario" required
+                asp-for="DNIPropietario">
+        </div>
+        <div class="nombre">
+            <label for="">Nombre</label>
+            <input type="text" name="nombre" id="" placeholder="Ingrese el nombre del propietario" required
+                asp-for="Nombre">
+        </div>
+        <div class="apellido">
+            <label for="">Apellido</label>
+            <input type="text" name="apellido" id="" placeholder="Ingrese el apellido del propietario" required
+                asp-for="Apellido">
+        </div>
+        <div class="celular">
+            <label for="">Telefono</label>
+            <input type="text" name="celular" id="" placeholder="Ingrese el telefono del propietario" required
+                asp-for="Celular">
+        </div>
+        <div class="email">
+            <label for="">Email</label>
+            <input type="email" name="email" id="" placeholder="Ingrese el email del propietario" required
+                asp-for="Email">
+        </div>
+        <div class="form-group">
+            <input type="submit" value="Crear" class="btn btn-success" />
+        </div>
+    </div>
+    <div class="d-flex justify-content-center m-5 gap-2">
+    <a class="btn btn-primary text-center" asp-area="" asp-controller="Propietario" asp-action="Listar">Volver
+        listado</a>
+        </div>
+    </div>
+</form>
+<script>
+
+    $(document).ready(function () {
+        var mensaje = '@TempData["SuccessMessage"]';
+        if (mensaje) {
+            toastr.success(mensaje, 'Propietario agregado con exito', { 
+                timeOut: 3000,
+                progressBar: true,
+                positionClass: 'toast-top-center',
+                onHidden: function() { 
+                    window.location.href = '@Url.Action("Listar", "Propietario")'; // Redirige cuando termine
+                }
+            });
+        }
+    });
+</script>

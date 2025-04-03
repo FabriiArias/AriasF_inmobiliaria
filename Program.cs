@@ -1,7 +1,18 @@
+using InmobiliariaApp.Data;
+using InmobiliariaApp.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+// builder de la db
+builder.Services.AddSingleton<DatabaseConnection>();
+
+
+// levantamos los repo
+builder.Services.AddScoped<PropietarioRepo>();
+builder.Services.AddScoped<InquilinoRepo>();
 
 var app = builder.Build();
 

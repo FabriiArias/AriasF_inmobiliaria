@@ -51,3 +51,4 @@ D:\uni\2do_anio\2do_cuatri_especial\Lab2\pruebas_code\AriasF_inmobiliaria\bin\De
 D:\uni\2do_anio\2do_cuatri_especial\Lab2\pruebas_code\AriasF_inmobiliaria\bin\Debug\net8.0\runtimes\win\lib\net8.0\System.Windows.Extensions.dll
 D:\uni\2do_anio\2do_cuatri_especial\Lab2\pruebas_code\AriasF_inmobiliaria\obj\Debug\net8.0\AriasF_inmobiliaria.csproj.AssemblyReference.cache
 D:\uni\2do_anio\2do_cuatri_especial\Lab2\pruebas_code\AriasF_inmobiliaria\obj\Debug\net8.0\AriasF_i.1B76E7AA.Up2Date
+D:\uni\2do_anio\2do_cuatri_especial\Lab2\pruebas_code\AriasF_inmobiliaria\obj\Debug\net8.0\AriasF_inmobiliaria.sourcelink.json

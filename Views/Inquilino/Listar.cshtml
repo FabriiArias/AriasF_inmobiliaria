@@ -1,0 +1,46 @@
+@model IEnumerable<InmobiliariaApp.Models.Inquilino>
+@{
+    ViewData["Title"] = "Listar inquilinos";
+}
+
+
+<h1 class="text-center mb-4">Inquilinos</h1>
+
+<div class="d-flex justify-content-center mb-3 gap-2">
+    <a class="btn btn-primary" asp-action="Crear">Agregar nuevo inquilino</a>
+</div>
+
+<table class="table">
+    <thead>
+        <tr class="text-center">
+            <th scope="col">DNI</th>
+            <th scope="col">Nombre</th>
+            <th scope="col">Apellido</th>
+            <th scope="col">Telefono</th>
+            <th scope="col">Email</th>
+            <th scope="col">Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var inquilino in Model)
+        {
+            <tr class="text-center">
+                <td>@inquilino.DNIInquilino</td>
+                <td>@inquilino.Nombre</td>
+                <td>@inquilino.Apellido</td>
+                <td>@inquilino.Celular</td>
+                <td>@inquilino.Email</td>
+                <td>
+                    <a class="btn btn-primary" asp-action="Editar" asp-route-id="@inquilino.Id">Editar</a>
+                    <a class="btn btn-secondary" asp-action="Detalle" asp-route-id="@inquilino.Id">Detalle
+                    </a>
+                    <form asp-action="Eliminar" method="post" style="display:inline;">
+                        <input type="hidden" name="id" value="@inquilino.Id" />
+                        <button type="submit" class="btn btn-danger"
+                            onclick="return confirm('¿Seguro que deseas eliminar este propietario?');">Eliminar</button>
+                    </form>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

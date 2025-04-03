@@ -28,7 +28,7 @@ namespace InmobiliariaApp.Repositories
                     DNIPropietario = reader.GetInt32("DNI_Propietario"),
                     Nombre = reader.GetString("nombre"),
                     Apellido = reader.GetString("apellido"),
-                    Celular = reader.GetString("celular"),
+                    Celular = reader.GetInt32("celular"),
                     Email = reader.GetString("mail")
                 });
             }
@@ -37,9 +37,11 @@ namespace InmobiliariaApp.Repositories
         }
 
         public Propietario? GetPropietarioByDNI(int dni){
-            using var connection = _dbConnection.GetConnection();
-            using var command = new MySqlCommand("SELECT * FROM Propietario WHERE DNI_Propietario = @DNI", connection);
             
+            Console.WriteLine("DNI repo: " + dni);
+            using var connection = _dbConnection.GetConnection();
+            using var command = new MySqlCommand("SELECT * FROM Propietario WHERE DNI_Propietario = @dni", connection);
+            command.Parameters.AddWithValue("@dni", dni);
             using var reader = command.ExecuteReader();
             if (reader.Read())
             {
@@ -48,7 +50,7 @@ namespace InmobiliariaApp.Repositories
                     DNIPropietario = reader.GetInt32("DNI_Propietario"),
                     Nombre = reader.GetString("nombre"),
                     Apellido = reader.GetString("apellido"),
-                    Celular = reader.GetString("celular"),
+                    Celular = reader.GetInt32("celular"),
                     Email = reader.GetString("mail")
                 };
             }
@@ -67,5 +69,24 @@ namespace InmobiliariaApp.Repositories
 
             command.ExecuteNonQuery();
         }
+
+        public void UpdatePropietario(Propietario propietario){
+            using var connection = _dbConnection.GetConnection();
+            using var command = new MySqlCommand("UPDATE propietario SET DNI_propietario = @DNI, nombre = @Nombre , apellido = @Apellido, celular = @Celular, mail = @Email WHERE DNI_propietario = @DNI", connection);
+
+            command.Parameters.AddWithValue("@DNI", propietario.DNIPropietario);
+            command.Parameters.AddWithValue("@Nombre", propietario.Nombre);
+            command.Parameters.AddWithValue("@Apellido", propietario.Apellido);
+            command.Parameters.AddWithValue("@Celular", propietario.Celular);
+            command.Parameters.AddWithValue("@Email", propietario.Email);
+
+            command.ExecuteNonQuery();
+            }
+        public void deletePropietario(int dni){
+            using var connection = _dbConnection.GetConnection();
+            using var command = new MySqlCommand("DELETE FROM Propietario WHERE DNI_Propietario = @dni", connection);
+            command.Parameters.AddWithValue("@dni", dni);
+            command.ExecuteNonQuery();
+            }
     }
 }
