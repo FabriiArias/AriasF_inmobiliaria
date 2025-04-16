@@ -19,7 +19,7 @@ namespace InmobiliariaApp.Repositories
             var inquilinos = new List<Inquilino>();
 
             using var connection = _dbConnection.GetConnection();
-            using var command = new MySqlCommand("SELECT * FROM Inquilino", connection);
+            using var command = new MySqlCommand("SELECT * FROM Inquilino where activo = 1", connection);
 
             using var reader = command.ExecuteReader();
             while (reader.Read())
@@ -41,7 +41,7 @@ namespace InmobiliariaApp.Repositories
         {
 
             using var connection = _dbConnection.GetConnection();
-            using var command = new MySqlCommand("SELECT * FROM Inquilino WHERE id_inquilino = @id", connection);
+            using var command = new MySqlCommand("SELECT * FROM Inquilino WHERE id_inquilino = @id AND activo = 1", connection);
             command.Parameters.AddWithValue("@id", id);
 
             using var reader = command.ExecuteReader();
@@ -64,7 +64,7 @@ namespace InmobiliariaApp.Repositories
         public void CrearInquilino(Inquilino inquilino)
         {
             using var connection = _dbConnection.GetConnection();
-            using var command = new MySqlCommand("INSERT INTO Inquilino (DNI_Inquilino, nombre, apellido, celular, email) VALUES (@DNI_Inquilino, @nombre, @apellido, @celular, @email)", connection);
+            using var command = new MySqlCommand("INSERT INTO Inquilino (DNI_Inquilino, nombre, apellido, celular, email, activo) VALUES (@DNI_Inquilino, @nombre, @apellido, @celular, @email, 1)", connection);
             command.Parameters.AddWithValue("@DNI_Inquilino", inquilino.DNIInquilino);
             command.Parameters.AddWithValue("@nombre", inquilino.Nombre);
             command.Parameters.AddWithValue("@apellido", inquilino.Apellido);
@@ -91,7 +91,7 @@ namespace InmobiliariaApp.Repositories
         public void DeleteInquilino(int id)
         {
             using var connection = _dbConnection.GetConnection();
-            using var command = new MySqlCommand("DELETE FROM inquilino WHERE id_inquilino = @id", connection);
+            using var command = new MySqlCommand("UPDATE inquilino SET activo = 0 WHERE id_inquilino = @Id", connection);
             command.Parameters.AddWithValue("@id", id);
 
             command.ExecuteNonQuery();

@@ -4,9 +4,9 @@
     ViewData["Title"] = "Detalles del Propietario";
 }
 
-<h1 class="text-center mb-4">Detalle de @Model.Apellido @Model.Nombre</h1>
+<h1 class="text-center p-3">Detalle de @Model.Apellido @Model.Nombre</h1>
 <table class="table">
-    <thead>
+    <thead class="text-black bg-light bg-gradient">
         <tr class="text-center">
             <th scope="col">DNI</th>
             <th scope="col">Nombre</th>
@@ -14,16 +14,25 @@
             <th scope="col">Telefono</th>
             <th scope="col">Email</th>
             <th scope="col">Inmuebles asociados</th>
+            <th scope="col">Acciones</th>
         </tr>
     </thead>
-    <tbody>
-        <tr class="text-center">
+    <tbody class="text-light bg-table-p bg-gradient">
+        <tr class="text-center align-middle">
             <td>@Model.DNIPropietario</td>
             <td>@Model.Nombre</td>
             <td>@Model.Apellido</td>
             <td>@Model.Celular</td>
             <td>@Model.Email</td>
             <td> aca habria que cambiar la <br>query para que traiga los asociados</td>
+            <td>
+                <a class="btn btn-primary" asp-action="Editar" title="Editar" asp-route-dni="@Model.DNIPropietario">✏️</a>
+                <form asp-action="Eliminar" method="post" style="display:inline;">
+                        <input type="hidden" name="dni" value="@Model.DNIPropietario" />
+                        <button title="Eliminar" type="submit" class="btn btn-danger"
+                            onclick="return confirm('¿Seguro que deseas eliminar este propietario?');">🗑️</button>
+                </form>
+            </td>
         </tr>
 
     </tbody>

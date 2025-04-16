@@ -1,3 +1,40 @@
+body {
+  font-family: Arial, sans-serif;
+  background-color: #1e1e2f; 
+  margin: 0;
+  padding: 0;
+  color: #dcdcdc; 
+}
+
+.bg-card-p{
+  background-color: #a17dc3;
+}
+.bg-table-p{
+  background-color: #2e213b;
+}
+.btn-bg-home1 {
+  font-weight: bold;
+  background-color: #1e1e2f;
+  color: #fff;
+}
+
+.btn-bg-home1:hover {
+  background-color: #030305;
+  color: #fff;
+}
+
+.btn-bg-home2 {
+  font-weight: bold;
+  background-color: #fff;
+  color: #1e1e2f;
+}
+
+.btn-bg-home2:hover {
+
+  background-color: #dfdfdf;
+  color: #1e1e2f;
+}
+
 html {
   font-size: 14px;
 }
@@ -19,4 +56,21 @@ html {
 
 body {
   margin-bottom: 60px;
+}
+
+/* estlios para btn hover eliminar img */
+.imagen-contenedor {
+  position: relative;
+  display: inline-block;
+}
+
+.boton-borrar {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  display: none;
+}
+
+.imagen-contenedor:hover .boton-borrar {
+  display: inline-block;
 }

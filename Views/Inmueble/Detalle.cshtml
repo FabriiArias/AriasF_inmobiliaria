@@ -1,0 +1,81 @@
+@model InmobiliariaApp.Models.Inmueble
+
+@{
+    ViewData["Title"] = "Detalles del Inmueble";
+}
+<h1 class="text-center p-4">Inmueble de @Model.NombrePropietario @Model.ApellidoPropietario</h1>
+
+
+<table class="table">
+    <thead class="text-black bg-light bg-gradient">
+        <tr class="text-center">
+            <th scope="col">Id</th>
+            <th scope="col">Propietario</th>
+            <th scope="col">Tipo</th>
+            <th scope="col">Direccion</th>
+            <th scope="col">Ambientes</th>
+            <th scope="col">Precio</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Uso</th>
+            <th scope="col">Portada</th>
+            <th scope="col">Acciones</th>
+        </tr>
+    </thead>
+    <tbody class="text-light align-middle bg-table-p bg-gradient">
+            <tr class="text-center align-middle">
+                <td>@Model.IdInmueble</td>
+                <td>
+                    <a class="text-decoration-none text-info fw-bold" asp-controller="Propietario" asp-action="Detalle" asp-route-dni="@Model.DNIPropietario">
+                        @Model.NombrePropietario @Model.ApellidoPropietario
+                    </a>
+                </td>
+
+                <td>@Model.Tipo</td>
+                <td>@Model.Direccion</td>
+                <td>@Model.Ambientes</td>
+                <td>@Model.Precio</td>
+                <td>@if (@Model.Estado == "disponible")
+                    {
+                        <p class="text-success fw-bold m-0">Disponible</p>
+                    }else if(@Model.Estado == "suspendido")
+                    {
+                        <p class="text-warning fw-bold m-0">Suspendido</p>
+                    }else{
+                        <p class="text-danger fw-bold m-0">Ocupado</p>
+                    }
+                    </td>
+                <td>@Model.Uso</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(Model.Portada))
+                    {
+
+                        <div class="imagen-contenedor">
+                            <img src="@Model.Portada" alt="Portada" style="width: 180px; height: auto;" />
+                            <form asp-action="BorrarPortada" method="post" class="boton-borrar">
+                                <input type="hidden" name="id" value="@Model.IdInmueble" />
+                                <button title="Eliminar" type="submit" class="btn btn-light btn-sm"
+                                    onclick="return confirm('¿Seguro que deseas eliminar esta imagen?');">❌</button>
+                            </form>
+                        </div>
+                    }else{
+                        <p class="p-0 m-0">Sin portada</p>
+                    }
+                </td>
+
+                <td>
+                    <a title="Editar" class="btn btn-primary" asp-action="Editar" asp-route-id="@Model.IdInmueble">✏️</a>
+                    <form asp-action="Eliminar" method="post" style="display:inline;">
+                        <input type="hidden" name="dni" value="@Model.DNIPropietario" />
+                        <button title="Elimiinar" type="submit" class="btn btn-danger"
+                            onclick="return confirm('¿Seguro que deseas eliminar este propietario?');">🗑️</button>
+                    </form>
+                </td>
+            </tr>
+    </tbody>
+</table>
+
+<h1 class="text-center">FOTOS</h1>
+
+<div class="d-flex justify-content-center mb-3 gap-2">
+    <a class="btn btn-primary text-center" asp-area="" asp-controller="Inmueble" asp-action="Listar">Volver listado</a>
+</div>

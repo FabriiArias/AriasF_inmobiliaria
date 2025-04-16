@@ -29,11 +29,14 @@ namespace InmobiliariaApp.Repositories
                 contratos.Add(new Contrato
                 {
                     IdContrato = reader.GetInt32("Id"),
-                    DNIInquilino = reader.GetInt32("DNIInquilino"),
-                    IdInmueble = reader.GetInt32("IdInmueble"),
+                    IdInmueble = reader.GetInt32("DNIInquilino"),
+                    IdInquilino = reader.GetInt32("IdInmueble"),
                     FechaInicio = reader.GetDateTime("FechaInicio"),
                     FechaFin = reader.GetDateTime("FechaFin"),
                     MontoMensual = reader.GetDouble("MontoMensual"),
+                    Multa = reader.GetDouble("Multa"),
+                    CreadoPor = reader.GetString("CreadoPor"),
+                    AnuladoPor = reader.GetString("AnuladoPor"),
                     Activo = reader.GetBoolean("Activo")
                 });
             }
@@ -45,7 +48,7 @@ namespace InmobiliariaApp.Repositories
         public Contrato? GetById(int id)
         {
             using var connection = _dbConnection.GetConnection();
-            using var command = new MySqlCommand("SELECT * FROM Contrato WHERE id_contrato = @Id", connection);
+            using var command = new MySqlCommand("SELECT * FROM Contrato WHERE id_contrato = @Id and activo = 1", connection);
             command.Parameters.AddWithValue("@Id", id);
 
             using var reader = command.ExecuteReader();
@@ -59,6 +62,9 @@ namespace InmobiliariaApp.Repositories
                     FechaInicio = reader.GetDateTime("FechaInicio"),
                     FechaFin = reader.GetDateTime("FechaFin"),
                     MontoMensual = reader.GetDouble("MontoMensual"),
+                    Multa = reader.GetDouble("Multa"),
+                    CreadoPor = reader.GetString("CreadoPor"),
+                    AnuladoPor = reader.GetString("AnuladoPor"),
                     Activo = reader.GetBoolean("Activo")
                 };
             }
@@ -67,25 +73,29 @@ namespace InmobiliariaApp.Repositories
         }
 
         // Método para agregar un nuevo contrato
-        public void Add(Contrato contrato)
+        public void InsertContrato(Contrato contrato)
         {
             using var connection = _dbConnection.GetConnection();
             using var command = new MySqlCommand(
-                "INSERT INTO Contrato (id_inquilino, id_inmueble, fecha_inicio, fecha_fin, monto_mensual, estado) " +
-                "VALUES (@InquilinoId, @InmuebleId, @FechaInicio, @FechaFin, @MontoMensual, @Vigente)", connection);
+                "INSERT INTO `contrato` (`id_inmueble`, `id_inquilino`, `f_inicio`, `f_fin`, `monto_mensual`, `multa`, `creado_por`, `anulado_por`, `activo`)" +
+                "VALUES (@IdInmueble, @IdInquilino, @FechaInicio, @FechaFin, @MontoMensual, @Multa, @CreadoPor, @AnuladoPor, 1)", connection);
 
-            command.Parameters.AddWithValue("@InquilinoId", contrato.DNIInquilino);
-            command.Parameters.AddWithValue("@InmuebleId", contrato.IdInmueble);
+            command.Parameters.AddWithValue("@IdInmueble", contrato.IdInmueble);
+            command.Parameters.AddWithValue("@IdInquilino", contrato.DNIInquilino);
             command.Parameters.AddWithValue("@FechaInicio", contrato.FechaInicio);
             command.Parameters.AddWithValue("@FechaFin", contrato.FechaFin);
             command.Parameters.AddWithValue("@MontoMensual", contrato.MontoMensual);
-            command.Parameters.AddWithValue("@Vigente", contrato.Activo);
+            command.Parameters.AddWithValue("@Multa", contrato.Multa);
+            command.Parameters.AddWithValue("@CreadoPor", contrato.CreadoPor);
+            command.Parameters.AddWithValue("@AnuladoPor", contrato.AnuladoPor);
 
             command.ExecuteNonQuery();
         }
 
         // Método para actualizar un contrato
-        public void Update(Contrato contrato)
+
+        //-------------------------------------------- CREAR EL METODO DE NUEVO ---------------------------------
+        public void UpdateContrato(Contrato contrato)
         {
             using var connection = _dbConnection.GetConnection();
             using var command = new MySqlCommand(

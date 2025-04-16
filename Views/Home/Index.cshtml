@@ -1,8 +1,59 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome hello word</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container mt-5">
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+
+        <!-- INMUEBLE -->
+        <div class="col">
+            <div class="card h-100 text-center shadow-sm bg-card-p">
+                <img src="https://cdn-icons-png.flaticon.com/512/609/609803.png" class="card-img-top p-4"
+                    style="height: 200px; object-fit: contain;" alt="Inmueble">
+                <div class="card-body">
+                    <h5 class="card-title text-dark fw-bold fs-2">Inmuebles</h5>
+                    <div class="d-flex flex-column">
+                    <a asp-controller="Inmueble" asp-action="Listar" class="btn btn-bg-home1 m-1">Ver todos los
+                        inmuebles</a>
+                    <a asp-controller="Inmueble" asp-action="Crear" class="btn btn-bg-home2 m-1">Agregar inmueble</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- INQUILINO -->
+        <div class="col">
+            <div class="card h-100 text-center shadow-sm bg-card-p">
+                <img src="https://cdn-icons-png.flaticon.com/512/3280/3280979.png" class="card-img-top p-4"
+                    style="height: 200px; object-fit: contain;" alt="Inquilino">
+                <div class="card-body">
+                    <h5 class="card-title text-dark fw-bold fs-2">Inquilinos</h5>
+                    <div class="d-flex flex-column">
+                        <a asp-controller="Inquilino" asp-action="Listar" class="btn btn-bg-home1 m-1">Ver todos los
+                            inquilinos</a>
+                        <a asp-controller="Inquilino" asp-action="Crear" class="btn btn-bg-home2 m-1">Agregar
+                            inquilino</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PROPIETARIO -->
+        <div class="col">
+            <div class="card h-100 text-center shadow-sm bg-card-p">
+                <img src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png" class="card-img-top p-4"
+                    style="height: 200px; object-fit: contain;" alt="Propietario">
+                <div class="card-body">
+                    <h5 class="card-title text-dark fw-bold fs-2">Propietarios</h5>
+                    <div class="d-flex flex-column">
+                        <a asp-controller="Propietario" asp-action="Listar" class="btn btn-bg-home1 m-1">Ver todos los
+                            propietarios</a>
+                        <a asp-controller="Propietario" asp-action="Crear" class="btn btn-bg-home2 m-1">Agregar
+                            propietario</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </div>

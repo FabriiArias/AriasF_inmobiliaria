@@ -4,14 +4,14 @@
 }
 
 
-<h1 class="text-center mb-4">Inquilinos</h1>
+<h1 class="text-center p-3">Listado de inquilinos</h1>
 
 <div class="d-flex justify-content-center mb-3 gap-2">
-    <a class="btn btn-primary" asp-action="Crear">Agregar nuevo inquilino</a>
+    <a class="btn btn-success" asp-action="Crear">Agregar nuevo inquilino</a>
 </div>
 
 <table class="table">
-    <thead>
+    <thead class="text-black bg-light bg-gradient">
         <tr class="text-center">
             <th scope="col">DNI</th>
             <th scope="col">Nombre</th>
@@ -21,7 +21,7 @@
             <th scope="col">Acciones</th>
         </tr>
     </thead>
-    <tbody>
+    <tbody class="text-light align-middle bg-table-p bg-gradient">
         @foreach (var inquilino in Model)
         {
             <tr class="text-center">
@@ -31,13 +31,14 @@
                 <td>@inquilino.Celular</td>
                 <td>@inquilino.Email</td>
                 <td>
-                    <a class="btn btn-primary" asp-action="Editar" asp-route-id="@inquilino.Id">Editar</a>
-                    <a class="btn btn-secondary" asp-action="Detalle" asp-route-id="@inquilino.Id">Detalle
+                    <a title="Detalles" class="btn btn-secondary" asp-action="Detalle" asp-route-id="@inquilino.Id">📜
                     </a>
+                    <a title="Editar" class="btn btn-primary" asp-action="Editar" asp-route-id="@inquilino.Id">✏️</a>
+                    
                     <form asp-action="Eliminar" method="post" style="display:inline;">
                         <input type="hidden" name="id" value="@inquilino.Id" />
-                        <button type="submit" class="btn btn-danger"
-                            onclick="return confirm('¿Seguro que deseas eliminar este propietario?');">Eliminar</button>
+                        <button title="Eliminar" type="submit" class="btn btn-danger"
+                            onclick="return confirm('¿Seguro que deseas eliminar este propietario?');">🗑️</button>
                     </form>
                 </td>
             </tr>

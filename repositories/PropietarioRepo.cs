@@ -18,7 +18,7 @@ namespace InmobiliariaApp.Repositories
             var propietarios = new List<Propietario>();
 
             using var connection = _dbConnection.GetConnection();
-            using var command = new MySqlCommand("SELECT * FROM Propietario", connection);
+            using var command = new MySqlCommand("SELECT * FROM Propietario where activo = 1", connection);
 
             using var reader = command.ExecuteReader();
             while (reader.Read())
@@ -40,7 +40,7 @@ namespace InmobiliariaApp.Repositories
             
             Console.WriteLine("DNI repo: " + dni);
             using var connection = _dbConnection.GetConnection();
-            using var command = new MySqlCommand("SELECT * FROM Propietario WHERE DNI_Propietario = @dni", connection);
+            using var command = new MySqlCommand("SELECT * FROM Propietario WHERE DNI_Propietario = @dni AND activo = 1", connection);
             command.Parameters.AddWithValue("@dni", dni);
             using var reader = command.ExecuteReader();
             if (reader.Read())
@@ -59,7 +59,7 @@ namespace InmobiliariaApp.Repositories
 
         public void InsertPropietario(Propietario propietario){
             using var connection = _dbConnection.GetConnection();
-            using var command = new MySqlCommand("INSERT INTO Propietario (DNI_Propietario, nombre, apellido, celular, mail) VALUES (@DNI, @Nombre, @Apellido, @Celular, @Email)", connection);
+            using var command = new MySqlCommand("INSERT INTO Propietario (DNI_Propietario, nombre, apellido, celular, mail, activo) VALUES (@DNI, @Nombre, @Apellido, @Celular, @Email, 1)", connection);
 
             command.Parameters.AddWithValue("@DNI", propietario.DNIPropietario);
             command.Parameters.AddWithValue("@Nombre", propietario.Nombre);
@@ -84,7 +84,7 @@ namespace InmobiliariaApp.Repositories
             }
         public void deletePropietario(int dni){
             using var connection = _dbConnection.GetConnection();
-            using var command = new MySqlCommand("DELETE FROM Propietario WHERE DNI_Propietario = @dni", connection);
+            using var command = new MySqlCommand("UPDATE propietario SET activo = 0 WHERE DNI_propietario = @DNI", connection);
             command.Parameters.AddWithValue("@dni", dni);
             command.ExecuteNonQuery();
             }

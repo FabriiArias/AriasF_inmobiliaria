@@ -1,0 +1,90 @@
+@model InmobiliariaApp.Models.Inmueble
+
+@{
+    ViewData["Title"] = "Ingresar Inmueble";
+}
+
+<h1 class="text-center p-3">Ingresar Inmueble</h1>
+
+<form asp-action="Insertar" method="post" enctype="multipart/form-data">
+    <div class="d-flex flex-column gap-2 justify-content-center align-items-center w-50 mx-auto">
+
+        <div class="propietario w-100">
+            <label asp-for="DNIPropietario" class="form-label">Propietario (DNI)</label>
+            <select asp-for="DNIPropietario" class="form-control">
+                <option value="" selected>Seleccione uno</option>
+                @foreach (var p in ViewBag.Propietarios)
+                {
+                    <option value="@p.DNIPropietario">@p.Nombre @p.Apellido</option>
+                }
+            </select>
+        </div>
+
+        <div class="tipo w-100">
+            <label asp-for="Tipo" class="form-label">Tipo</label>
+            <select asp-for="Tipo" class="form-select" required>
+                <option value="">Seleccione tipo</option>
+                <option value="casa">Casa</option>
+                <option value="local">Local</option>
+                <option value="deposito">Depósito</option>
+                <option value="departamento">Departamento</option>
+            </select>
+        </div>
+
+        <div class="direccion w-100">
+            <label asp-for="Direccion" class="form-label">Dirección</label>
+            <input asp-for="Direccion" class="form-control" placeholder="Ingrese la dirección" required />
+        </div>
+
+        <div class="ambientes w-100">
+            <label asp-for="Ambientes" class="form-label">Ambientes</label>
+            <input asp-for="Ambientes" class="form-control" type="number" min="1" required />
+        </div>
+
+        <div class="precio w-100">
+            <label asp-for="Precio" class="form-label">Precio</label>
+            <input asp-for="Precio" class="form-control" type="number" step="0.01" required />
+        </div>
+
+        <div class="estado w-100">
+            <label asp-for="Estado" class="form-label">Estado</label>
+            <select asp-for="Estado" class="form-select">
+                <option value="">Seleccione estado</option>
+                <option value="disponible">Disponible</option>
+                <option value="suspendido">Suspendido</option>
+                <option value="ocupado">Ocupado</option>
+            </select>
+        </div>
+
+        <div class="uso w-100">
+            <label asp-for="Uso" class="form-label">Uso</label>
+            <select asp-for="Uso" class="form-select">
+                <option value="">Seleccione uso</option>
+                <option value="residencial">Residencial</option>
+                <option value="comercial">Comercial</option>
+                <option value="otro">Otro</option>
+            </select>
+        </div>
+
+        <div class="latitud w-100">
+            <label asp-for="Latitud" class="form-label">Latitud</label>
+            <input asp-for="Latitud" class="form-control" type="text" />
+        </div>
+
+        <div class="longitud w-100">
+            <label asp-for="Longitud" class="form-label">Longitud</label>
+            <input asp-for="Longitud" class="form-control" type="text" />
+        </div>
+        <div class="portada w-100">
+            <label for="PortadaFile" class="form-label">Portada</label>
+            <input type="file" name="PortadaFile" class="form-control" accept="image/*" />
+        </div>
+
+
+        <div class="w-100 text-center mt-4">
+            <input type="submit" value="Crear" class="btn btn-success" />
+            <a class="btn btn-primary ms-2" asp-controller="Inmueble" asp-action="Listar">Volver al listado</a>
+        </div>
+
+    </div>
+</form>

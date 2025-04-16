@@ -13,6 +13,8 @@ builder.Services.AddSingleton<DatabaseConnection>();
 // levantamos los repo
 builder.Services.AddScoped<PropietarioRepo>();
 builder.Services.AddScoped<InquilinoRepo>();
+builder.Services.AddScoped<InmuebleRepo>();
+builder.Services.AddScoped<ContratoRepo>();
 
 var app = builder.Build();
 

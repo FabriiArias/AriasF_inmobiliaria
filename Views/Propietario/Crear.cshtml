@@ -10,56 +10,52 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
-
-<h1 class="text-center mb-4">Ingresar nuevo propietario</h1>
-
+<h1 class="text-center p-3">Ingresar nuevo propietario</h1>
 
 <form asp-action="Insertar">
-    <div class="d-flex flex-column gap-2 justify-content-center align-items-center">
-        <div class="dni">
-            <label for="">DNI</label>
-            <input type="text" name="DNIPropietario" id="" placeholder="Ingrese el DNI del propietario" required
-                asp-for="DNIPropietario">
+    <div class="d-flex flex-column gap-2 justify-content-center align-items-center w-50 mx-auto">
+
+        <div class="dni w-100">
+            <label asp-for="DNIPropietario" class="form-label">DNI</label>
+            <input asp-for="DNIPropietario" class="form-control" placeholder="Ingrese el DNI del propietario" required />
         </div>
-        <div class="nombre">
-            <label for="">Nombre</label>
-            <input type="text" name="nombre" id="" placeholder="Ingrese el nombre del propietario" required
-                asp-for="Nombre">
+
+        <div class="nombre w-100">
+            <label asp-for="Nombre" class="form-label">Nombre</label>
+            <input asp-for="Nombre" class="form-control" placeholder="Ingrese el nombre del propietario" required />
         </div>
-        <div class="apellido">
-            <label for="">Apellido</label>
-            <input type="text" name="apellido" id="" placeholder="Ingrese el apellido del propietario" required
-                asp-for="Apellido">
+
+        <div class="apellido w-100">
+            <label asp-for="Apellido" class="form-label">Apellido</label>
+            <input asp-for="Apellido" class="form-control" placeholder="Ingrese el apellido del propietario" required />
         </div>
-        <div class="celular">
-            <label for="">Telefono</label>
-            <input type="text" name="celular" id="" placeholder="Ingrese el telefono del propietario" required
-                asp-for="Celular">
+
+        <div class="celular w-100">
+            <label asp-for="Celular" class="form-label">Teléfono</label>
+            <input asp-for="Celular" class="form-control" placeholder="Ingrese el teléfono del propietario" required />
         </div>
-        <div class="email">
-            <label for="">Email</label>
-            <input type="email" name="email" id="" placeholder="Ingrese el email del propietario" required
-                asp-for="Email">
+
+        <div class="email w-100">
+            <label asp-for="Email" class="form-label">Email</label>
+            <input asp-for="Email" class="form-control" placeholder="Ingrese el email del propietario" required type="email" />
         </div>
-        <div class="form-group">
+
+        <div class="w-100 text-center mt-4">
             <input type="submit" value="Crear" class="btn btn-success" />
+            <a class="btn btn-primary ms-2" asp-controller="Propietario" asp-action="Listar">Volver al listado</a>
         </div>
-    </div>
-    <div class="d-flex justify-content-center m-5 gap-2">
-    <a class="btn btn-primary text-center" asp-area="" asp-controller="Propietario" asp-action="Listar">Volver
-        listado</a>
-        </div>
+
     </div>
 </form>
-<script>
 
+<script>
     $(document).ready(function () {
         var mensaje = '@TempData["SuccessMessage"]';
         if (mensaje) {
-            toastr.success(mensaje, 'Propietario agregado con exito', { 
+            toastr.success(mensaje, 'Propietario agregado con éxito', { 
                 timeOut: 3000,
                 progressBar: true,
-                positionClass: 'toast-top-center',
+                positionClass: 'toast-top-right',
                 onHidden: function() { 
                     window.location.href = '@Url.Action("Listar", "Propietario")'; // Redirige cuando termine
                 }
