@@ -1,0 +1,97 @@
+@model IEnumerable<InmobiliariaApp.Models.Contrato>
+@{
+    ViewData["Title"] = "Listar contratos";
+}
+
+<h1 class="text-center p-3">Listado de contratos</h1>
+<div class="d-flex justify-content-center mb-3 gap-2">
+    <a class="btn btn-success" asp-action="Crear">Agregar nuevo contrato</a>
+</div>
+
+<table class="table">
+    <thead class="text-black bg-light bg-gradient">
+        <tr class="text-center">
+            <th scope="col">Id</th>
+            <th scope="col">Inmueble</th>
+            <th scope="col">Inquilino</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Fecha Inicio</th>
+            <th scope="col">Fecha Fin</th>
+            <th scope="col">Monto mensual</th>
+            <th scope="col">Acciones</th>
+        </tr>
+    </thead>
+    <tbody class="text-light align-middle bg-table-p bg-gradient">
+        @foreach (var c in Model)
+        {
+            <tr class="text-center">
+                <td>@c.IdContrato</td>
+                <td>
+                    @if (!string.IsNullOrEmpty(c.Portada))
+                    {
+                        var idPortada = $"portada-{c.IdContrato}";
+                        var idTexto = $"texto-portada-{c.IdContrato}";
+                        <div class="d-flex flex-column">
+                            <p class="m-0 p-0">Direccion: @c.Direccion</p>
+                            <a href="javascript:void(0)" class="text-light fw-bold"
+                                onclick="togglePortada('@idPortada', '@idTexto')" id="@idTexto">Mostrar Portada</a>
+                        </div>
+                        <div id="@idPortada" style="display: none; margin-top: 15px;">
+                            <img src="@c.Portada" alt="Portada del inmueble" class="img-fluid rounded" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex flex-column align-items-center">
+                            <p class="m-0 p-0">Direccion: @c.Direccion</p>
+                            <p class="m-0 p-0">Sin portada</p>
+                        </div>
+                    }
+                </td>
+                <td>@c.NyAInquilino</td>
+                <td>
+                    @if (c.Estado == "Vigente")
+                    {
+                        <p class="text-success fw-bold m-0">Vigente</p>
+                    }
+                    else if (c.Estado == "Pendiente_anulacion")
+                    {
+                        <p class="fw-bold m-0" style="color: rgb(128, 128, 39);">Pendiente a Anular</p>
+                    }
+                    else if (c.Estado == "Anulado")
+                    {
+                        <p class="text-danger fw-bold m-0">Anulado</p>
+                    }
+                    else if (c.Estado == "Finalizado")
+                    {
+                        <p class="fw-bold m-0" style="color: rgb(0, 0, 0);">Finalizado</p>
+                    }
+
+                </td>
+                <td>@c.FechaInicio.ToString("dd/MM/yyyy")</td>
+                <td>@c.FechaFin.ToString("dd/MM/yyyy")</td>
+                <td>$@c.MontoMensual</td>
+                <td>
+                    <a class="btn btn-primary" asp-action="Detalle" title="Detalles" asp-route-id="@c.IdContrato">📜 Detalles</a>
+                   
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- Script para mostrar la portada -->
+<script>
+    function togglePortada(portadaId, textoId) {
+        var portadaDiv = document.getElementById(portadaId);
+        var textoPortada = document.getElementById(textoId);
+
+        if (portadaDiv.style.display === "none") {
+            portadaDiv.style.display = "block";
+            textoPortada.innerHTML = "Ocultar Portada";
+        } else {
+            portadaDiv.style.display = "none";
+            textoPortada.innerHTML = "Mostrar Portada";
+        }
+    }
+</script>

@@ -1,0 +1,85 @@
+@model InmobiliariaApp.Models.Contrato
+
+@{
+    ViewData["Title"] = "Renovar Contrato";
+}
+
+<h1 class="text-center p-3">Renovar Contrato</h1>
+
+<form id="renovarForm" asp-action="Insertar" method="post"
+      class="d-flex flex-column gap-3 justify-content-center align-items-center w-50 mx-auto">
+
+    <input type="hidden" name="IdInquilino" value="@Model.IdInquilino" />
+    <input type="hidden" name="IdInmueble" value="@Model.IdInmueble" />
+    <input type="hidden" name="MontoMensual" value="@Model.MontoMensual" />
+
+    <div class="w-100">
+        <label class="form-label">Inquilino</label>
+        <input type="text" class="form-control" value="@Model.NyAInquilino" disabled />
+    </div>
+
+    <div class="w-100">
+        <label class="form-label">Inmueble</label>
+        <input type="text" class="form-control" value="@Model.Direccion" disabled />
+    </div>
+
+    <div class="w-100">
+        <label class="form-label">Fecha de Inicio</label>
+        <input id="fechaInicio" name="FechaInicio" type="date" class="form-control" required />
+    </div>
+
+    <div class="w-100">
+        <label class="form-label">Fecha de Fin</label>
+        <input id="fechaFin" name="FechaFin" type="date" class="form-control" required />
+    </div>
+
+    <div class="w-100 text-center">
+        <button type="button" class="btn btn-primary" onclick="verificarDisponibilidad()">Verificar Disponibilidad</button>
+    </div>
+
+    <p id="resultadoDisponibilidad" class="text-center fw-bold mt-3"></p>
+
+    <div id="botonConfirmar" class="w-100 text-center mt-3 d-none">
+        <button type="submit" class="btn btn-success">Confirmar Renovación</button>
+    </div>
+</form>
+
+<script>
+    const fechaInicioInput = document.getElementById("fechaInicio");
+    const fechaFinInput = document.getElementById("fechaFin");
+    const hoy = new Date().toISOString().split("T")[0];
+    fechaInicioInput.min = hoy;
+
+    fechaInicioInput.addEventListener("change", () => {
+        fechaFinInput.min = fechaInicioInput.value;
+    });
+
+    async function verificarDisponibilidad() {
+        const inicio = fechaInicioInput.value;
+        const fin = fechaFinInput.value;
+        const resultado = document.getElementById("resultadoDisponibilidad");
+        const btnConfirmar = document.getElementById("botonConfirmar");
+
+        if (!inicio || !fin) {
+            resultado.innerText = "Debe completar ambas fechas.";
+            resultado.className = "text-danger text-center fw-bold";
+            btnConfirmar.classList.add("d-none");
+            return;
+        }
+
+        const inmuebleId = "@Model.IdInmueble";
+
+        const response = await fetch(`/Contrato/VerificarDisponibilidad?inmuebleId=${inmuebleId}&fechaInicio=${inicio}&fechaFin=${fin}`);
+        const disponible = await response.json();
+
+        if (disponible) {
+            resultado.innerText = "✅ El inmueble está disponible.";
+            resultado.className = "text-success text-center fw-bold";
+            btnConfirmar.classList.remove("d-none");
+        } else {
+            resultado.innerText = "❌ El inmueble NO está disponible en ese rango de fechas.";
+            resultado.className = "text-danger text-center fw-bold";
+            btnConfirmar.classList.add("d-none");
+        }
+    }
+</script>

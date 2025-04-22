@@ -73,35 +73,36 @@ namespace InmobiliariaApp.Controllers
             ViewBag.Propietarios = propietarios;
             return View(inmueble);
         }
+        
         [HttpPost]
-    public IActionResult Actualizar(Inmueble inmueble, IFormFile PortadaFile)
-    {
-    if (PortadaFile != null && PortadaFile.Length > 0)
-    {
-        var carpetaDestino = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
-
-        // Eliminar la portada anterior si existe
-        if (!string.IsNullOrEmpty(inmueble.Portada))
+        public IActionResult Actualizar(Inmueble inmueble, IFormFile PortadaFile)
         {
-            var rutaPortadaAnterior = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", inmueble.Portada.TrimStart('/'));
-            if (System.IO.File.Exists(rutaPortadaAnterior))
+        if (PortadaFile != null && PortadaFile.Length > 0)
+        {
+            var carpetaDestino = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", "uploads");
+
+            // Eliminar la portada anterior si existe
+            if (!string.IsNullOrEmpty(inmueble.Portada))
             {
-                System.IO.File.Delete(rutaPortadaAnterior);
+                var rutaPortadaAnterior = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", inmueble.Portada.TrimStart('/'));
+                if (System.IO.File.Exists(rutaPortadaAnterior))
+                {
+                    System.IO.File.Delete(rutaPortadaAnterior);
+                }
             }
+
+            // Guardar la nueva portada
+            var nombreArchivo = Guid.NewGuid().ToString() + Path.GetExtension(PortadaFile.FileName);
+            var rutaArchivo = Path.Combine(carpetaDestino, nombreArchivo);
+
+            using (var stream = new FileStream(rutaArchivo, FileMode.Create))
+            {
+                PortadaFile.CopyTo(stream);
+            }
+
+            // Actualizar la nueva portada
+            inmueble.Portada = "/uploads/" + nombreArchivo;
         }
-
-        // Guardar la nueva portada
-        var nombreArchivo = Guid.NewGuid().ToString() + Path.GetExtension(PortadaFile.FileName);
-        var rutaArchivo = Path.Combine(carpetaDestino, nombreArchivo);
-
-        using (var stream = new FileStream(rutaArchivo, FileMode.Create))
-        {
-            PortadaFile.CopyTo(stream);
-        }
-
-        // Actualizar la nueva portada
-        inmueble.Portada = "/uploads/" + nombreArchivo;
-    }
 
     _inmuebleRepo.UpdateInmueble(inmueble);
     return RedirectToAction("Listar");

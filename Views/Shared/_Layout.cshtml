@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - AriasF_inmobiliaria</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/AriasF_inmobiliaria.styles.css" asp-append-version="true" />
 </head>
@@ -14,30 +15,47 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-card-p border-bottom box-shadow mb-3">
             <div class="container-fluid fw-bold text-center">
-                <div class="navbar-collapse collapse d-sm-inline-flex">
+                <div class="navbar-collapse collapse d-sm-inline-flex w-100">
                     <ul class="navbar-nav flex-grow-1 d-flex justify-content-center">
                         <li class="nav-item">
                             <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "text-light fw-bold" : "text-dark")"
-                                asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Inmueble" ? "text-light fw-bold" : "text-dark")"
-                                asp-area="" asp-controller="Inmueble" asp-action="Listar">Inmuebles</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Inquilino" ? "text-light fw-bold" : "text-dark")"
-                                asp-area="" asp-controller="Inquilino" asp-action="Listar">Inquilinos</a>
+                               asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Propietario" ? "text-light fw-bold" : "text-dark")"
-                                asp-area="" asp-controller="Propietario" asp-action="Listar">Propietarios</a>
+                               asp-area="" asp-controller="Propietario" asp-action="Listar">Propietarios</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Inquilino" ? "text-light fw-bold" : "text-dark")"
+                               asp-area="" asp-controller="Inquilino" asp-action="Listar">Inquilinos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Inmueble" ? "text-light fw-bold" : "text-dark")"
+                               asp-area="" asp-controller="Inmueble" asp-action="Listar">Inmuebles</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link @(ViewContext.RouteData.Values["controller"]?.ToString() == "Contrato" ? "text-light fw-bold" : "text-dark")"
+                               asp-area="" asp-controller="Contrato" asp-action="Listar">Contratos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link disabled @(ViewContext.RouteData.Values["controller"]?.ToString() == "Pago" ? "text-light fw-bold" : "text-dark")"
+                               asp-area="" asp-controller="Pago" asp-action="Listar">Pagos</a>
                         </li>
                     </ul>
+
+                    <ul class="navbar-nav ms-auto me-3">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark disabled" asp-area="" asp-controller="Usuario" asp-action="Perfil" >
+                                <i class="bi bi-person-circle fs-5"></i> Perfil
+                            </a>
+                        </li>
+                    </ul>
+
                 </div>
             </div>
         </nav>
-
     </header>
+
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()
@@ -49,10 +67,19 @@
             &copy; 2025 - AriasF_inmobiliaria - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
+
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <style>
+        .disabled {
+            pointer-events: none;
+            color: grey;
+            text-decoration: none;
+        }
+    </style>
 </body>
 
 </html>

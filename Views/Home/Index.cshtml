@@ -1,21 +1,21 @@
 ﻿@{
     ViewData["Title"] = "Home";
 }
-
-<div class="container mt-5">
+<div class="container mt-5 mb-5">
     <div class="row row-cols-1 row-cols-md-3 g-4">
 
-        <!-- INMUEBLE -->
+        <!-- PROPIETARIO -->
         <div class="col">
             <div class="card h-100 text-center shadow-sm bg-card-p">
-                <img src="https://cdn-icons-png.flaticon.com/512/609/609803.png" class="card-img-top p-4"
-                    style="height: 200px; object-fit: contain;" alt="Inmueble">
+                <img src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png" class="card-img-top p-4"
+                    style="height: 200px; object-fit: contain;" alt="Propietario">
                 <div class="card-body">
-                    <h5 class="card-title text-dark fw-bold fs-2">Inmuebles</h5>
+                    <h5 class="card-title text-dark fw-bold fs-2">Propietarios</h5>
                     <div class="d-flex flex-column">
-                    <a asp-controller="Inmueble" asp-action="Listar" class="btn btn-bg-home1 m-1">Ver todos los
-                        inmuebles</a>
-                    <a asp-controller="Inmueble" asp-action="Crear" class="btn btn-bg-home2 m-1">Agregar inmueble</a>
+                        <a asp-controller="Propietario" asp-action="Listar" class="btn btn-bg-home1 m-1">Ver todos los
+                            propietarios</a>
+                        <a asp-controller="Propietario" asp-action="Crear" class="btn btn-bg-home2 m-1">Agregar
+                            propietario</a>
                     </div>
                 </div>
             </div>
@@ -38,22 +38,66 @@
             </div>
         </div>
 
-        <!-- PROPIETARIO -->
+        <!-- INMUEBLE -->
         <div class="col">
             <div class="card h-100 text-center shadow-sm bg-card-p">
-                <img src="https://cdn-icons-png.flaticon.com/512/4140/4140048.png" class="card-img-top p-4"
-                    style="height: 200px; object-fit: contain;" alt="Propietario">
+                <img src="https://cdn-icons-png.flaticon.com/512/609/609803.png" class="card-img-top p-4"
+                    style="height: 200px; object-fit: contain;" alt="Inmueble">
                 <div class="card-body">
-                    <h5 class="card-title text-dark fw-bold fs-2">Propietarios</h5>
+                    <h5 class="card-title text-dark fw-bold fs-2">Inmuebles</h5>
                     <div class="d-flex flex-column">
-                        <a asp-controller="Propietario" asp-action="Listar" class="btn btn-bg-home1 m-1">Ver todos los
-                            propietarios</a>
-                        <a asp-controller="Propietario" asp-action="Crear" class="btn btn-bg-home2 m-1">Agregar
-                            propietario</a>
+                        <a asp-controller="Inmueble" asp-action="Listar" class="btn btn-bg-home1 m-1">Ver todos los
+                            inmuebles</a>
+                        <a asp-controller="Inmueble" asp-action="Crear" class="btn btn-bg-home2 m-1">Agregar
+                            inmueble</a>
                     </div>
                 </div>
             </div>
         </div>
+
+    </div>
+
+    <!-- Segunda fila con Contratos y Pagos centrados -->
+    <div class="row justify-content-center g-4 mt-2">
+        <!-- CONTRATOS -->
+        <div class="col-md-4">
+            <div class="card h-100 text-center shadow-sm bg-card-p">
+                <img src="https://cdn-icons-png.freepik.com/512/17929/17929961.png?uid=R161924474&ga=GA1.1.222654643.1738210900"
+                    class="card-img-top p-4" style="height: 200px; object-fit: contain;" alt="Contrato">
+                <div class="card-body">
+                    <h5 class="card-title text-dark fw-bold fs-2">Contratos</h5>
+                    <div class="d-flex flex-column">
+                        <a asp-controller="Contrato" asp-action="Listar" class="btn btn-bg-home1 m-1">Ver todos los
+                            contratos</a>
+                        <a asp-controller="Contrato" asp-action="Crear" class="btn btn-bg-home2 m-1">Crear contrato</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PAGOS -->
+        <div class="col-md-4">
+            <div class="card h-100 text-center shadow-sm bg-card-p">
+                <img src="https://cdn-icons-png.freepik.com/512/1980/1980528.png?uid=R161924474&ga=GA1.1.222654643.1738210900"
+                    class="card-img-top p-4" style="height: 200px; object-fit: contain;" alt="Pagos">
+                <div class="card-body">
+                    <h5 class="card-title text-dark fw-bold fs-2">Pagos (proximamente)</h5>
+                    <div class="d-flex flex-column">
+                        <a asp-controller="Pago" asp-action="Listar" class="btn btn-bg-home1 m-1 disabled">Ver todos los
+                            pagos</a>
+                        <a asp-controller="Pago" asp-action="Crear" class="btn btn-bg-home2 m-1 disabled">Crear pago</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            .disabled {
+                pointer-events: none;
+                color: grey;
+                text-decoration: none;
+            }
+        </style>
 
     </div>
 </div>

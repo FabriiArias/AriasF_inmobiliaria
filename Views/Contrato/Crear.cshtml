@@ -1,0 +1,208 @@
+@model InmobiliariaApp.Models.Contrato
+
+@{
+    ViewData["Title"] = "Crear Contrato";
+    var inquilinos = ViewBag.Inquilinos as List<InmobiliariaApp.Models.Inquilino>;
+    var inmuebles = ViewBag.Inmuebles as List<InmobiliariaApp.Models.Inmueble>;
+    bool seFiltraronInmuebles = ViewContext.HttpContext.Request.Query.Count > 0;
+}
+
+<h1 class="text-center p-3">Crear Contrato</h1>
+<h3 class="text-center pb-2">Buscar Inmueble Disponible</h3>
+
+<!-- Formulario de filtro -->
+<form asp-action="FiltrarInmuebles" asp-controller="Contrato" method="get"
+    class="d-flex flex-column gap-2 justify-content-center align-items-center w-50 mx-auto mb-4">
+    <div class="w-100">
+        <label class="form-label">Tipo</label>
+        <select name="tipo" class="form-control" required>
+            <option value="">--Seleccionar--</option>
+            <option value="casa" selected="@(ViewContext.HttpContext.Request.Query["tipo"] == "casa")">Casa</option>
+            <option value="local" selected="@(ViewContext.HttpContext.Request.Query["tipo"] == "local")">Local</option>
+            <option value="deposito" selected="@(ViewContext.HttpContext.Request.Query["tipo"] == "deposito")">Depósito
+            </option>
+            <option value="departamento" selected="@(ViewContext.HttpContext.Request.Query["tipo"] == "departamento")">
+                Departamento</option>
+        </select>
+    </div>
+
+    <div class="w-100">
+        <label class="form-label">Uso</label>
+        <select name="uso" class="form-control" required>
+            <option value="">--Seleccionar--</option>
+            <option value="residencial" selected="@(ViewContext.HttpContext.Request.Query["uso"] == "residencial")">
+                Residencial</option>
+            <option value="comercial" selected="@(ViewContext.HttpContext.Request.Query["uso"] == "comercial")">
+                Comercial</option>
+            <option value="otro" selected="@(ViewContext.HttpContext.Request.Query["uso"] == "otro")">Otro</option>
+        </select>
+    </div>
+
+    <div class="w-100">
+        <label class="form-label">Ambientes</label>
+        <input type="number" name="ambientes" class="form-control"
+            value="@ViewContext.HttpContext.Request.Query["ambientes"]" required />
+    </div>
+
+    <div class="w-100">
+        <label class="form-label">Fecha Inicio</label>
+        <input type="date" name="fechaInicio" class="form-control" id="fechaInicio"
+            value="@ViewContext.HttpContext.Request.Query["fechaInicio"]" required />
+    </div>
+
+    <div class="w-100">
+        <label class="form-label">Fecha Fin</label>
+        <input type="date" name="fechaFin" class="form-control" id="fechaFin"
+            value="@ViewContext.HttpContext.Request.Query["fechaFin"]" required />
+    </div>
+
+    <div class="w-100 text-center mt-2">
+        <button type="button" class="btn btn-link text-white" onclick="limpiarCampos()">Limpiar campos</button>
+    </div>
+
+    <div class="w-100 text-center mt-2">
+        <button type="submit" class="btn btn-primary">Buscar Disponibles</button>
+    </div>
+</form>
+
+
+<!-- Formulario para guardar contrato -->
+<form asp-action="Insertar" method="post"
+    class="d-flex flex-column gap-2 justify-content-center align-items-center w-50 mx-auto">
+
+    <input type="hidden" name="FechaInicio" value="@ViewContext.HttpContext.Request.Query["fechaInicio"]" />
+    <input type="hidden" name="FechaFin" value="@ViewContext.HttpContext.Request.Query["fechaFin"]" />
+    <input type="hidden" name="MontoMensual" id="MontoMensual" value="" />
+
+
+    <div class="w-100">
+        <label asp-for="IdInquilino" class="form-label">Inquilino</label>
+        <div class="d-flex flex-row gap-2">
+            <select asp-for="IdInquilino" class="form-control" required>
+                <option value="">Seleccione un inquilino</option>
+                @foreach (var inq in inquilinos)
+                {
+                    <option value="@inq.Id">@inq.Nombre @inq.Apellido</option>
+                }
+            </select>
+            <a class="btn btn-primary" asp-controller="Inquilino" asp-action="Crear">Nuevo</a>
+        </div>
+    </div>
+    @if (seFiltraronInmuebles)
+    {
+        @if (inmuebles != null && inmuebles.Any())
+        {
+            <h4 class="text-center mt-4">Inmuebles Disponibles</h4>
+            <div class="d-flex flex-row justify-content-center gap-3">
+                @foreach (var inmueble in inmuebles)
+                {
+                    <div class="card text-black shadow-sm" style="width: 20rem;">
+                        @if (!string.IsNullOrEmpty(inmueble.Portada))
+                        {
+                            <img class="card-img-top" src="@inmueble.Portada" alt="Portada del Inmueble"
+                                style="height: 200px; object-fit: cover;" />
+                        }
+                        <div class="card-body">
+                            <h5 class="card-title">@inmueble.Direccion</h5>
+                            <p class="card-text">
+                                Tipo: @inmueble.Tipo<br />
+                                Uso: @inmueble.Uso<br />
+                                Ambientes: @inmueble.Ambientes<br />
+                                Precio: $@inmueble.Precio
+                            </p>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="IdInmueble" value="@inmueble.IdInmueble"
+                                    required />
+                                <label class="form-check-label">Seleccionar este inmueble</label>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="alert alert-warning mt-3">No se encontraron inmuebles disponibles con esos filtros.</div>
+        }
+    }
+    <div class="w-100 text-center mt-4">
+        <button type="submit" class="btn btn-success">Guardar Contrato</button>
+    </div>
+</form>
+
+
+
+
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const radioButtons = document.querySelectorAll('input[name="IdInmueble"]');
+        const hiddenMonto = document.getElementById("MontoMensual");
+
+        radioButtons.forEach(radio => {
+            radio.addEventListener("change", function () {
+                const card = this.closest(".card");
+                const precioText = card.querySelector(".card-text").innerText;
+                const match = precioText.match(/Precio:\s*\$(\d+(\.\d+)?)/);
+
+                if (match) {
+                    hiddenMonto.value = match[1];
+                }
+            });
+        });
+    });
+</script>
+
+<!-- limiar campos -->
+
+<script>
+    function limpiarCampos() {
+        document.querySelector('select[name="tipo"]').value = "";
+        document.querySelector('select[name="uso"]').value = "";
+        document.querySelector('input[name="ambientes"]').value = "";
+        document.getElementById("fechaInicio").value = "";
+        document.getElementById("fechaFin").value = "";
+    }
+</script>
+
+
+<!-- chequeo fechas front > hoy -->
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const fechaInicio = document.getElementById("fechaInicio");
+        const fechaFin = document.getElementById("fechaFin");
+        const hoy = new Date().toISOString().split("T")[0];
+
+        fechaInicio.setAttribute("min", hoy);
+        fechaFin.setAttribute("min", hoy);
+
+        // Al cambiar la fecha de inicio, actualizamos el mínimo para la fecha de fin
+        fechaInicio.addEventListener("change", function () {
+            fechaFin.min = fechaInicio.value;
+
+            const inicio = new Date(fechaInicio.value);
+            const hoyDate = new Date(hoy);
+
+            if (inicio < hoyDate) {
+                alert("La fecha de inicio debe ser hoy o una fecha futura.");
+                fechaInicio.value = "";
+            }
+        });
+
+        // Al cambiar la fecha de fin, validamos contra la fecha de inicio
+        fechaFin.addEventListener("change", function () {
+            const inicio = new Date(fechaInicio.value);
+            const fin = new Date(fechaFin.value);
+            const hoyDate = new Date(hoy);
+
+            if (fin <= inicio) {
+                alert("La fecha de fin debe ser posterior a la fecha de inicio.");
+                fechaFin.value = "";
+            } else if (fin < hoyDate) {
+                alert("La fecha de fin debe ser hoy o una fecha futura.");
+                fechaFin.value = "";
+            }
+        });
+    });
+</script>

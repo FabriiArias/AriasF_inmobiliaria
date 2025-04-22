@@ -1,0 +1,164 @@
+@model InmobiliariaApp.Models.Contrato
+@{
+    ViewData["Title"] = "Detalles del Contrato";
+}
+
+<h1 class="text-center p-3">🧾 Contrato #@Model.IdContrato</h1>
+
+<div class="container d-flex justify-content-center">
+    <div class="card shadow-lg p-4" style="max-width: 800px; width: 100%; border-left: 8px solid #0d6efd; background-color: #F5DEB3 !important;
+">
+
+        <div class="row mb-6 text-center">
+            <div class="col-md-12">
+                <h5 class="text-primary fw-bold">ESTADO DEL CONTRATO</h5>
+                @if (Model.Estado == "Vigente")
+                {
+                    <p class="text-success fw-bold">Vigente</p>
+                }
+                else if (Model.Estado == "Pendiente_anulacion")
+                {
+                    <p class="fw-bold" style="color: rgb(128, 128, 39);">Pendiente a Anular</p>
+                }
+                else if (Model.Estado == "Anulado")
+                {
+                    <p class="text-danger fw-bold">Anulado</p>
+                }
+                else if (Model.Estado == "Finalizado")
+                {
+                    <p class="fw-bold" style="color: rgb(133, 45, 45);">Finalizado</p>
+
+                }
+            </div>
+        </div>
+
+        <hr class="bg-dark" style="height: 1px; border: none;">
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <h5 class="text-primary fw-bold">🧍Inquilino</h5>
+                <p class="text-black fst-italic fw-semibold">@Model.NyAInquilino</p>
+                <a asp-controller="Inquilino" asp-action="Detalle" asp-route-id="@Model.IdInquilino" target="_blank">
+                    Ver Inquilino</a>
+            </div>
+
+
+            <div class="col-md-6">
+                <h5 class="text-primary fw-bold">🏠 Inmueble</h5>
+                <p class="text-black fst-italic fw-semibold">Dirección: @Model.Direccion</p>
+
+                @if (!string.IsNullOrEmpty(Model.Portada))
+                {
+                    <div class="d-flex gap-5">
+                        <a href="javascript:void(0)" class="text-body fw-bold" onclick="togglePortada()"
+                            id="texto-portada">Mostrar
+                            Portada</a>
+                        <a asp-controller="Inmueble" asp-action="Detalle" asp-route-id="@Model.IdInmueble" target="_blank"
+                            class="">Ver Inmueble</a>
+                    </div>
+                    <div id="portada" style="display: none; margin-top: 15px;">
+                        <img src="@Model.Portada" alt="Portada del inmueble" class="img-fluid rounded" />
+                    </div>
+                }
+                else
+                {
+                    <a asp-controller="Inmueble" asp-action="Detalle" asp-route-id="@Model.IdInmueble" target="_blank"
+                        class="">Ver Inmueble</a>
+                }
+
+
+            </div>
+
+        </div>
+
+        <hr class="bg-dark" style="height: 1px; border: none;">
+
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <h5 class="text-primary fw-bold">📅 Fecha de inicio</h5>
+                <p class="text-black fst-italic fw-semibold">@Model.FechaInicio.ToString("dd/MM/yyyy")</p>
+            </div>
+            <div class="col-md-6">
+                <h5 class="text-primary fw-bold">📅 Fecha de fin</h5>
+                <p class="text-black fst-italic fw-semibold">@Model.FechaFin.ToString("dd/MM/yyyy")</p>
+            </div>
+        </div>
+
+        <hr class="bg-dark" style="height: 1px; border: none;">
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <h5 class="text-primary fw-bold">📝 Creado Por </h5>
+                <p class="text-black fst-italic fw-semibold">@Model.NyAUser</p>
+            </div>
+            <div class="col-md-6">
+                <h5 class="text-primary fw-bold">💰 Monto mensual</h5>
+                <p class="text-black fst-italic fw-semibold">$@Model.MontoMensual</p>
+            </div>
+
+        </div>
+
+        @if (Model.Estado == "Anulado" || Model.Estado == "Pendiente_anulacion")
+        {
+            <hr class="bg-dark" style="height: 1px; border: none;">
+
+            <div class="row mb-3">
+
+
+                <div class="col-md-6">
+                    <h5 class="text-primary fw-bold">📝 Anulado por</h5>
+                    <p class="text-black fst-italic fw-semibold">@Model.NyAUser</p>
+                </div>
+
+                <div class="col-md-6">
+                    <h5 class="text-primary fw-bold">📅 Fecha inicio de la Anulacion</h5>
+                    <p class="text-black
+                                    <p class=" text-black fst-italic fw-semibold">
+                        @Model.FechaInicioAnulacion?.ToString("dd/MM/yyyy")</p>
+                </div>
+            </div>
+            <hr class="bg-dark" style="height: 1px; border: none;">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <h5 class="text-primary fw-bold">📅 Fecha fin Anulacion</h5>
+                    <p class="text-black fst-italic fw-semibold">@Model.FechaFinAnulacion?.ToString("dd/MM/yyyy")</p>
+                </div>
+            </div>
+        }
+
+
+
+        <div class="d-flex justify-content-end gap-2 mt-4">
+
+            <a class="btn btn-success" asp-action="Renovar" asp-route-id="@Model.IdContrato">♻️ Renovar</a>
+            @if (Model.Estado == "Vigente")
+            {
+                <a class="btn btn-danger" asp-action="AnularVista" title="Anular" asp-route-id="@Model.IdContrato">🗑️
+                    Anular</a>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-center mb-3 gap-2">
+    <a class="mt-4 btn btn-primary text-center" asp-area="" asp-controller="Contrato" asp-action="Listar">Volver
+        listado</a>
+</div>
+
+
+<!-- Script para mostrar la portada -->
+<script>
+    function togglePortada() {
+        var portadaDiv = document.getElementById("portada");
+        if (portadaDiv.style.display === "none") {
+            portadaDiv.style.display = "block";
+            var textoPortada = document.getElementById("texto-portada");
+            textoPortada.innerHTML = "Ocultar Portada";
+        } else {
+            portadaDiv.style.display = "none";
+            var textoPortada = document.getElementById("texto-portada");
+            textoPortada.innerHTML = "Mostrar Portada";
+        }
+    }
+</script>

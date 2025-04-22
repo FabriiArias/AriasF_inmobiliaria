@@ -1,0 +1,53 @@
+@model InmobiliariaApp.Models.Contrato
+
+@{
+    ViewData["Title"] = "Anular Contrato";
+}
+
+<h1 class="text-center p-3 text-danger">Anular Contrato</h1>
+
+<form asp-action="Anular" method="post"
+    class="d-flex flex-column gap-2 justify-content-center align-items-center w-50 mx-auto">
+
+    <input type="hidden" asp-for="IdContrato" />
+
+    <div class="w-100">
+        <label class="form-label fw-bold text-warning text-center">¿Está seguro que desea anular este contrato?</label>
+        <label class="form-label fw-bold text-warning text-center">No se podra dar de alta de nuevo</label>
+    </div>
+
+    <div class="w-100">
+        <label class="form-label">Fecha de Anulación</label>
+        <input disabled type="text" class="form-control" value="@DateTime.Now.ToShortDateString()" readonly />
+    </div>
+
+    <div class="w-100">
+        <label asp-for="FechaFin" class="form-label">Fecha de Fin del Contrato</label>
+        <input asp-for="FechaFin" type="date" class="form-control" id="fechaFin" required />
+        <span asp-validation-for="FechaFin" class="text-danger"></span>
+    </div>
+
+    <div class="w-100 text-center mt-3 d-flex justify-content-center gap-3">
+        <button type="submit" class="btn btn-danger"
+            onclick="return confirm('¿Está seguro que desea anular este contrato?')">Anular</button>
+        <a asp-action="Listar" class="btn btn-secondary">Cancelar</a>
+    </div>
+</form>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const fechaFin = document.getElementById("fechaFin");
+        const hoy = new Date().toISOString().split("T")[0];
+        fechaFin.setAttribute("min", hoy);
+
+        fechaFin.addEventListener("change", function () {
+            const fin = new Date(fechaFin.value);
+            const hoyDate = new Date(hoy);
+
+            if (fin < hoyDate) {
+                alert("La fecha de fin debe ser hoy o una fecha futura.");
+                fechaFin.value = "";
+            }
+        });
+    });
+</script>

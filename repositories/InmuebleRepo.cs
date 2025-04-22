@@ -111,13 +111,94 @@ namespace InmobiliariaApp.Repositories
 
             command.ExecuteNonQuery();
             }
-        public void DeleteInmueble(int id){
+
+
+            public void DeleteInmueble(int id){
             using var connection = _dbConnection.GetConnection();
             using var command = new MySqlCommand("UPDATE inmueble SET activo = 0 WHERE Id_Inmueble = @Id", connection);
             command.Parameters.AddWithValue("@Id", id);
             command.ExecuteNonQuery();
             
             }
+
+
+            public List<Inmueble> GetInmueblesDisponibles(string tipo, string uso, int ambientes, DateTime fechaInicio, DateTime fechaFin)
+            {
+                var disponibles = new List<Inmueble>();
+
+                using var connection = _dbConnection.GetConnection();
+                using var command = new MySqlCommand(@"
+                    SELECT
+                        i.*,
+                        p.nombre,
+                        p.apellido
+                    FROM
+                        inmueble i
+                    JOIN propietario p ON
+                        i.dni_propietario = p.dni_propietario
+                    LEFT JOIN contrato c ON
+                        i.id_inmueble = c.id_inmueble 
+                        AND c.f_inicio <= @FechaFin 
+                        AND c.f_fin >= @FechaInicio
+                    WHERE
+                        i.activo = 1 
+                        AND i.tipo = @Tipo 
+                        AND i.uso = @Uso 
+                        AND i.ambientes = @Ambientes
+                        AND (c.id_contrato IS NULL OR c.estado NOT IN ('Vigente', 'Pendiente_anular'));
+                                    "
+                , connection);
+
+                command.Parameters.AddWithValue("@Tipo", tipo);
+                command.Parameters.AddWithValue("@Uso", uso);
+                command.Parameters.AddWithValue("@Ambientes", ambientes);
+                command.Parameters.AddWithValue("@FechaInicio", fechaInicio.ToString("yyyy-MM-dd"));
+                command.Parameters.AddWithValue("@FechaFin", fechaFin.ToString("yyyy-MM-dd"));
+
+                using var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    disponibles.Add(new Inmueble
+                    {
+                        IdInmueble = reader.GetInt32("id_inmueble"),
+                        DNIPropietario = reader.GetInt32("dni_propietario"),
+                        Tipo = reader.GetString("tipo"),
+                        Direccion = reader.GetString("direccion"),
+                        Ambientes = reader.GetInt32("ambientes"),
+                        Precio = reader.GetDouble("precio"),
+                        Estado = reader.GetString("estado"),
+                        Uso = reader.GetString("uso"),
+                        Longitud = reader.GetString("longitud"),
+                        Latitud = reader.GetString("latitud"),
+                        Portada = reader.IsDBNull(reader.GetOrdinal("portada")) ? null : reader.GetString("portada"),
+                        NombrePropietario = reader.GetString("nombre"),
+                        ApellidoPropietario = reader.GetString("apellido")
+                    });
+                }
+
+                return disponibles;
+            }
+
         
+        public bool EstaDisponible(int idInmueble, DateTime fechaInicio, DateTime fechaFin)
+{
+    using var connection = _dbConnection.GetConnection();
+    using var command = new MySqlCommand(@"
+        SELECT COUNT(*) FROM contrato
+        WHERE id_inmueble = @id
+        AND estado = 'Vigente'
+        AND (
+            (@inicio BETWEEN f_inicio AND f_fin)
+            OR (@fin BETWEEN f_inicio AND f_fin)
+            OR (f_inicio BETWEEN @inicio AND @fin)
+        )", connection);
+
+    command.Parameters.AddWithValue("@id", idInmueble);
+    command.Parameters.AddWithValue("@inicio", fechaInicio);
+    command.Parameters.AddWithValue("@fin", fechaFin);
+
+    return Convert.ToInt32(command.ExecuteScalar()) == 0;
+}
+
     }
 }
