@@ -6,24 +6,30 @@
     var inmuebles = ViewBag.Inmuebles as List<InmobiliariaApp.Models.Inmueble>;
     bool seFiltraronInmuebles = ViewContext.HttpContext.Request.Query.Count > 0;
 }
-
-<h1 class="text-center p-3">Crear Contrato</h1>
+<div class="text-center">
+    <h1 class="text-center p-2 m-3 mb-5" style="border-bottom: 1px solid white; display: inline-block; margin: 0 auto;">
+        Crear Contrato</h1>
+</div>
 
 <div class="container">
     <div class="row">
         <!-- Columna izquierda: Filtros -->
         <div class="col-md-5 border-end pe-4">
             <h4 class="text-center pb-2">Buscar Inmueble Disponible</h4>
-            <form asp-action="FiltrarInmuebles" asp-controller="Contrato" method="get"
-                  class="d-flex flex-column gap-3">
+            <form asp-action="FiltrarInmuebles" asp-controller="Contrato" method="get" class="d-flex flex-column gap-3">
                 <div>
                     <label class="form-label">Tipo</label>
                     <select name="tipo" class="form-control" required>
                         <option value="">--Seleccionar--</option>
-                        <option value="casa" selected="@(ViewContext.HttpContext.Request.Query["tipo"] == "casa")">Casa</option>
-                        <option value="local" selected="@(ViewContext.HttpContext.Request.Query["tipo"] == "local")">Local</option>
-                        <option value="deposito" selected="@(ViewContext.HttpContext.Request.Query["tipo"] == "deposito")">Depósito</option>
-                        <option value="departamento" selected="@(ViewContext.HttpContext.Request.Query["tipo"] == "departamento")">Departamento</option>
+                        <option value="casa" selected="@(ViewContext.HttpContext.Request.Query["tipo"] == "casa")">Casa
+                        </option>
+                        <option value="local" selected="@(ViewContext.HttpContext.Request.Query["tipo"] == "local")">
+                            Local</option>
+                        <option value="deposito"
+                            selected="@(ViewContext.HttpContext.Request.Query["tipo"] == "deposito")">Depósito</option>
+                        <option value="departamento"
+                            selected="@(ViewContext.HttpContext.Request.Query["tipo"] == "departamento")">Departamento
+                        </option>
                     </select>
                 </div>
 
@@ -31,28 +37,33 @@
                     <label class="form-label">Uso</label>
                     <select name="uso" class="form-control" required>
                         <option value="">--Seleccionar--</option>
-                        <option value="residencial" selected="@(ViewContext.HttpContext.Request.Query["uso"] == "residencial")">Residencial</option>
-                        <option value="comercial" selected="@(ViewContext.HttpContext.Request.Query["uso"] == "comercial")">Comercial</option>
-                        <option value="otro" selected="@(ViewContext.HttpContext.Request.Query["uso"] == "otro")">Otro</option>
+                        <option value="residencial"
+                            selected="@(ViewContext.HttpContext.Request.Query["uso"] == "residencial")">Residencial
+                        </option>
+                        <option value="comercial"
+                            selected="@(ViewContext.HttpContext.Request.Query["uso"] == "comercial")">Comercial</option>
+                        <option value="otro" selected="@(ViewContext.HttpContext.Request.Query["uso"] == "otro")">Otro
+                        </option>
                     </select>
                 </div>
 
                 <div>
                     <label class="form-label">Ambientes</label>
                     <input type="number" name="ambientes" class="form-control"
-                           value="@ViewContext.HttpContext.Request.Query["ambientes"]" required />
+                        value="@ViewContext.HttpContext.Request.Query["ambientes"]"
+                        placeholder="Cantidad de ambientes (1,2,3 etc...)" required />
                 </div>
 
                 <div>
                     <label class="form-label">Fecha Inicio</label>
                     <input type="date" name="fechaInicio" class="form-control" id="fechaInicio"
-                           value="@ViewContext.HttpContext.Request.Query["fechaInicio"]" required />
+                        value="@ViewContext.HttpContext.Request.Query["fechaInicio"]" required />
                 </div>
 
                 <div>
                     <label class="form-label">Fecha Fin</label>
                     <input type="date" name="fechaFin" class="form-control" id="fechaFin"
-                           value="@ViewContext.HttpContext.Request.Query["fechaFin"]" required />
+                        value="@ViewContext.HttpContext.Request.Query["fechaFin"]" required />
                 </div>
 
                 <div class="d-flex justify-content-between mt-2">
@@ -70,6 +81,7 @@
                 <input type="hidden" name="MontoMensual" id="MontoMensual" value="" />
 
                 <div>
+                    <h4 class="text-center pb-2">Seleccione Inquilino e Inmuieble</h4>
                     <label asp-for="IdInquilino" class="form-label">Inquilino</label>
                     <div class="d-flex gap-2">
                         <select asp-for="IdInquilino" class="form-control" required>
@@ -96,7 +108,7 @@
                                         @if (!string.IsNullOrEmpty(inmueble.Portada))
                                         {
                                             <img class="card-img-top" src="@inmueble.Portada" alt="Portada"
-                                                 style="height: 180px; object-fit: cover;" />
+                                                style="height: 180px; object-fit: cover;" />
                                         }
                                         <div class="card-body text-black">
                                             <h6 class="card-title">@inmueble.Direccion</h6>
@@ -107,7 +119,8 @@
                                                 Precio: $@inmueble.Precio
                                             </p>
                                             <div class="form-check">
-                                                <input class="form-check-input" type="radio" name="IdInmueble" value="@inmueble.IdInmueble" required />
+                                                <input class="form-check-input" type="radio" name="IdInmueble"
+                                                    value="@inmueble.IdInmueble" required />
                                                 <label class="form-check-label">Seleccionar</label>
                                             </div>
                                         </div>
@@ -123,7 +136,8 @@
                 }
 
                 <div class="text-center mt-4">
-                    <button type="submit" class="btn btn-success" id="btnGuardarContrato" disabled>Guardar Contrato</button>
+                    <button type="submit" class="btn btn-success" id="btnGuardarContrato" disabled>Guardar
+                        Contrato</button>
                 </div>
             </form>
         </div>
