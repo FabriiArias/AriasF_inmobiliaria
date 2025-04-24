@@ -13,7 +13,7 @@
     <div class="d-flex flex-column gap-2 justify-content-center align-items-center w-50 mx-auto">
         <div class="propietario w-100">
             <label asp-for="DNIPropietario" class="form-label">Propietario (DNI)</label>
-            <select asp-for="DNIPropietario" class="form-control">
+            <select asp-for="DNIPropietario" class="form-control" required>
                 <option value="" selected>Seleccione uno</option>
                 @foreach (var p in ViewBag.Propietarios)
                 {
@@ -26,7 +26,7 @@
 
         <div class="tipo w-100">
             <label asp-for="Tipo" class="form-label">Tipo</label>
-            <select asp-for="Tipo" class="form-select">
+            <select asp-for="Tipo" class="form-select" required>
                 <option value="casa">Casa</option>
                 <option value="local">Local</option>
                 <option value="deposito">Depósito</option>
@@ -36,22 +36,22 @@
 
         <div class="direccion w-100">
             <label asp-for="Direccion" class="form-label">Dirección</label>
-            <input asp-for="Direccion" class="form-control" />
+            <input asp-for="Direccion" class="form-control" required/>
         </div>
 
         <div class="ambientes w-100">
             <label asp-for="Ambientes" class="form-label">Ambientes</label>
-            <input asp-for="Ambientes" class="form-control" type="number" min="1" />
+            <input asp-for="Ambientes" class="form-control" type="number" min="1" required/>
         </div>
 
         <div class="precio w-100">
             <label asp-for="Precio" class="form-label">Precio</label>
-            <input asp-for="Precio" class="form-control" type="number" step="0.01" />
+            <input asp-for="Precio" class="form-control" type="number" step="0.01" required/>
         </div>
 
         <div class="estado w-100">
             <label asp-for="Estado" class="form-label">Estado</label>
-            <select asp-for="Estado" class="form-select">
+            <select asp-for="Estado" class="form-select" required>
                 <option value="disponible">Disponible</option>
                 <option value="suspendido">Suspendido</option>
                 <option value="ocupado">Ocupado</option>
@@ -60,7 +60,7 @@
 
         <div class="uso w-100">
             <label asp-for="Uso" class="form-label">Uso</label>
-            <select asp-for="Uso" class="form-select">
+            <select asp-for="Uso" class="form-select" required>
                 <option value="residencial">Residencial</option>
                 <option value="comercial">Comercial</option>
                 <option value="otro">Otro</option>
@@ -69,12 +69,12 @@
 
         <div class="latitud w-100">
             <label asp-for="Latitud" class="form-label">Latitud</label>
-            <input asp-for="Latitud" class="form-control" type="text" />
+            <input asp-for="Latitud" class="form-control" type="text" required/>
         </div>
 
         <div class="longitud w-100">
             <label asp-for="Longitud" class="form-label">Longitud</label>
-            <input asp-for="Longitud" class="form-control" type="text" />
+            <input asp-for="Longitud" class="form-control" type="text" required />
         </div>
 
         <div class="portada w-100">

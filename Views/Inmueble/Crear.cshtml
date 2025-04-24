@@ -38,17 +38,17 @@
 
         <div class="ambientes w-100">
             <label asp-for="Ambientes" class="form-label">Ambientes</label>
-            <input asp-for="Ambientes" class="form-control" type="number" min="1" required />
+            <input asp-for="Ambientes" class="form-control" type="number" min="1" placeholder="Numero de ambientes" required/>
         </div>
 
         <div class="precio w-100">
             <label asp-for="Precio" class="form-label">Precio</label>
-            <input asp-for="Precio" class="form-control" type="number" step="0.01" required />
+            <input asp-for="Precio" class="form-control" type="number" step="0.01" placeholder="Precio mensual" required />
         </div>
 
         <div class="estado w-100">
             <label asp-for="Estado" class="form-label">Estado</label>
-            <select asp-for="Estado" class="form-select">
+            <select asp-for="Estado" class="form-select" required>
                 <option value="">Seleccione estado</option>
                 <option value="disponible">Disponible</option>
                 <option value="suspendido">Suspendido</option>
@@ -58,7 +58,7 @@
 
         <div class="uso w-100">
             <label asp-for="Uso" class="form-label">Uso</label>
-            <select asp-for="Uso" class="form-select">
+            <select asp-for="Uso" class="form-select" required>
                 <option value="">Seleccione uso</option>
                 <option value="residencial">Residencial</option>
                 <option value="comercial">Comercial</option>
@@ -68,12 +68,12 @@
 
         <div class="latitud w-100">
             <label asp-for="Latitud" class="form-label">Latitud</label>
-            <input asp-for="Latitud" class="form-control" type="text" />
+            <input asp-for="Latitud" class="form-control" type="text" required/>
         </div>
 
         <div class="longitud w-100">
             <label asp-for="Longitud" class="form-label">Longitud</label>
-            <input asp-for="Longitud" class="form-control" type="text" />
+            <input asp-for="Longitud" class="form-control" type="text" required/>
         </div>
         <div class="portada w-100">
             <label for="PortadaFile" class="form-label">Portada</label>

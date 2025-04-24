@@ -8,130 +8,127 @@
 }
 
 <h1 class="text-center p-3">Crear Contrato</h1>
-<h3 class="text-center pb-2">Buscar Inmueble Disponible</h3>
 
-<!-- Formulario de filtro -->
-<form asp-action="FiltrarInmuebles" asp-controller="Contrato" method="get"
-    class="d-flex flex-column gap-2 justify-content-center align-items-center w-50 mx-auto mb-4">
-    <div class="w-100">
-        <label class="form-label">Tipo</label>
-        <select name="tipo" class="form-control" required>
-            <option value="">--Seleccionar--</option>
-            <option value="casa" selected="@(ViewContext.HttpContext.Request.Query["tipo"] == "casa")">Casa</option>
-            <option value="local" selected="@(ViewContext.HttpContext.Request.Query["tipo"] == "local")">Local</option>
-            <option value="deposito" selected="@(ViewContext.HttpContext.Request.Query["tipo"] == "deposito")">Depósito
-            </option>
-            <option value="departamento" selected="@(ViewContext.HttpContext.Request.Query["tipo"] == "departamento")">
-                Departamento</option>
-        </select>
-    </div>
+<div class="container">
+    <div class="row">
+        <!-- Columna izquierda: Filtros -->
+        <div class="col-md-5 border-end pe-4">
+            <h4 class="text-center pb-2">Buscar Inmueble Disponible</h4>
+            <form asp-action="FiltrarInmuebles" asp-controller="Contrato" method="get"
+                  class="d-flex flex-column gap-3">
+                <div>
+                    <label class="form-label">Tipo</label>
+                    <select name="tipo" class="form-control" required>
+                        <option value="">--Seleccionar--</option>
+                        <option value="casa" selected="@(ViewContext.HttpContext.Request.Query["tipo"] == "casa")">Casa</option>
+                        <option value="local" selected="@(ViewContext.HttpContext.Request.Query["tipo"] == "local")">Local</option>
+                        <option value="deposito" selected="@(ViewContext.HttpContext.Request.Query["tipo"] == "deposito")">Depósito</option>
+                        <option value="departamento" selected="@(ViewContext.HttpContext.Request.Query["tipo"] == "departamento")">Departamento</option>
+                    </select>
+                </div>
 
-    <div class="w-100">
-        <label class="form-label">Uso</label>
-        <select name="uso" class="form-control" required>
-            <option value="">--Seleccionar--</option>
-            <option value="residencial" selected="@(ViewContext.HttpContext.Request.Query["uso"] == "residencial")">
-                Residencial</option>
-            <option value="comercial" selected="@(ViewContext.HttpContext.Request.Query["uso"] == "comercial")">
-                Comercial</option>
-            <option value="otro" selected="@(ViewContext.HttpContext.Request.Query["uso"] == "otro")">Otro</option>
-        </select>
-    </div>
+                <div>
+                    <label class="form-label">Uso</label>
+                    <select name="uso" class="form-control" required>
+                        <option value="">--Seleccionar--</option>
+                        <option value="residencial" selected="@(ViewContext.HttpContext.Request.Query["uso"] == "residencial")">Residencial</option>
+                        <option value="comercial" selected="@(ViewContext.HttpContext.Request.Query["uso"] == "comercial")">Comercial</option>
+                        <option value="otro" selected="@(ViewContext.HttpContext.Request.Query["uso"] == "otro")">Otro</option>
+                    </select>
+                </div>
 
-    <div class="w-100">
-        <label class="form-label">Ambientes</label>
-        <input type="number" name="ambientes" class="form-control"
-            value="@ViewContext.HttpContext.Request.Query["ambientes"]" required />
-    </div>
+                <div>
+                    <label class="form-label">Ambientes</label>
+                    <input type="number" name="ambientes" class="form-control"
+                           value="@ViewContext.HttpContext.Request.Query["ambientes"]" required />
+                </div>
 
-    <div class="w-100">
-        <label class="form-label">Fecha Inicio</label>
-        <input type="date" name="fechaInicio" class="form-control" id="fechaInicio"
-            value="@ViewContext.HttpContext.Request.Query["fechaInicio"]" required />
-    </div>
+                <div>
+                    <label class="form-label">Fecha Inicio</label>
+                    <input type="date" name="fechaInicio" class="form-control" id="fechaInicio"
+                           value="@ViewContext.HttpContext.Request.Query["fechaInicio"]" required />
+                </div>
 
-    <div class="w-100">
-        <label class="form-label">Fecha Fin</label>
-        <input type="date" name="fechaFin" class="form-control" id="fechaFin"
-            value="@ViewContext.HttpContext.Request.Query["fechaFin"]" required />
-    </div>
+                <div>
+                    <label class="form-label">Fecha Fin</label>
+                    <input type="date" name="fechaFin" class="form-control" id="fechaFin"
+                           value="@ViewContext.HttpContext.Request.Query["fechaFin"]" required />
+                </div>
 
-    <div class="w-100 text-center mt-2">
-        <button type="button" class="btn btn-link text-white" onclick="limpiarCampos()">Limpiar campos</button>
-    </div>
+                <div class="d-flex justify-content-between mt-2">
+                    <button type="button" class="btn btn-outline-light" onclick="limpiarCampos()">Limpiar</button>
+                    <button type="submit" class="btn btn-primary">Buscar</button>
+                </div>
+            </form>
+        </div>
 
-    <div class="w-100 text-center mt-2">
-        <button type="submit" class="btn btn-primary">Buscar Disponibles</button>
-    </div>
-</form>
+        <!-- Columna derecha: Resultados -->
+        <div class="col-md-7">
+            <form asp-action="Insertar" method="post" class="d-flex flex-column gap-3">
+                <input type="hidden" name="FechaInicio" value="@ViewContext.HttpContext.Request.Query["fechaInicio"]" />
+                <input type="hidden" name="FechaFin" value="@ViewContext.HttpContext.Request.Query["fechaFin"]" />
+                <input type="hidden" name="MontoMensual" id="MontoMensual" value="" />
 
+                <div>
+                    <label asp-for="IdInquilino" class="form-label">Inquilino</label>
+                    <div class="d-flex gap-2">
+                        <select asp-for="IdInquilino" class="form-control" required>
+                            <option value="">Seleccione un inquilino</option>
+                            @foreach (var inq in inquilinos)
+                            {
+                                <option value="@inq.Id">@inq.Nombre @inq.Apellido</option>
+                            }
+                        </select>
+                        <a class="btn btn-primary" asp-controller="Inquilino" asp-action="Crear">Nuevo</a>
+                    </div>
+                </div>
 
-<!-- Formulario para guardar contrato -->
-<form asp-action="Insertar" method="post"
-    class="d-flex flex-column gap-2 justify-content-center align-items-center w-50 mx-auto">
-
-    <input type="hidden" name="FechaInicio" value="@ViewContext.HttpContext.Request.Query["fechaInicio"]" />
-    <input type="hidden" name="FechaFin" value="@ViewContext.HttpContext.Request.Query["fechaFin"]" />
-    <input type="hidden" name="MontoMensual" id="MontoMensual" value="" />
-
-
-    <div class="w-100">
-        <label asp-for="IdInquilino" class="form-label">Inquilino</label>
-        <div class="d-flex flex-row gap-2">
-            <select asp-for="IdInquilino" class="form-control" required>
-                <option value="">Seleccione un inquilino</option>
-                @foreach (var inq in inquilinos)
+                @if (seFiltraronInmuebles)
                 {
-                    <option value="@inq.Id">@inq.Nombre @inq.Apellido</option>
+                    @if (inmuebles != null && inmuebles.Any())
+                    {
+                        <h5 class="text-center mt-3">Inmuebles Disponibles</h5>
+                        <div class="row row-cols-1 row-cols-md-2 g-3">
+                            @foreach (var inmueble in inmuebles)
+                            {
+                                <div class="col">
+                                    <div class="card h-100 shadow-sm">
+                                        @if (!string.IsNullOrEmpty(inmueble.Portada))
+                                        {
+                                            <img class="card-img-top" src="@inmueble.Portada" alt="Portada"
+                                                 style="height: 180px; object-fit: cover;" />
+                                        }
+                                        <div class="card-body text-black">
+                                            <h6 class="card-title">@inmueble.Direccion</h6>
+                                            <p class="card-text small">
+                                                Tipo: @inmueble.Tipo<br />
+                                                Uso: @inmueble.Uso<br />
+                                                Ambientes: @inmueble.Ambientes<br />
+                                                Precio: $@inmueble.Precio
+                                            </p>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="IdInmueble" value="@inmueble.IdInmueble" required />
+                                                <label class="form-check-label">Seleccionar</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning mt-3">No se encontraron inmuebles disponibles.</div>
+                    }
                 }
-            </select>
-            <a class="btn btn-primary" asp-controller="Inquilino" asp-action="Crear">Nuevo</a>
+
+                <div class="text-center mt-4">
+                    <button type="submit" class="btn btn-success" id="btnGuardarContrato" disabled>Guardar Contrato</button>
+                </div>
+            </form>
         </div>
     </div>
-    @if (seFiltraronInmuebles)
-    {
-        @if (inmuebles != null && inmuebles.Any())
-        {
-            <h4 class="text-center mt-4">Inmuebles Disponibles</h4>
-            <div class="d-flex flex-row justify-content-center gap-3">
-                @foreach (var inmueble in inmuebles)
-                {
-                    <div class="card text-black shadow-sm" style="width: 20rem;">
-                        @if (!string.IsNullOrEmpty(inmueble.Portada))
-                        {
-                            <img class="card-img-top" src="@inmueble.Portada" alt="Portada del Inmueble"
-                                style="height: 200px; object-fit: cover;" />
-                        }
-                        <div class="card-body">
-                            <h5 class="card-title">@inmueble.Direccion</h5>
-                            <p class="card-text">
-                                Tipo: @inmueble.Tipo<br />
-                                Uso: @inmueble.Uso<br />
-                                Ambientes: @inmueble.Ambientes<br />
-                                Precio: $@inmueble.Precio
-                            </p>
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="IdInmueble" value="@inmueble.IdInmueble"
-                                    required />
-                                <label class="form-check-label">Seleccionar este inmueble</label>
-                            </div>
-                        </div>
-                    </div>
-                }
-            </div>
-        }
-        else
-        {
-            <div class="alert alert-warning mt-3">No se encontraron inmuebles disponibles con esos filtros.</div>
-        }
-    }
-    <div class="w-100 text-center mt-4">
-        <button type="submit" class="btn btn-success">Guardar Contrato</button>
-    </div>
-</form>
-
-
-
+</div>
 
 
 <script>
@@ -204,5 +201,20 @@
                 fechaFin.value = "";
             }
         });
+    });
+</script>
+
+<!-- Habilitar/desabilittar boton guardar -->
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const btnGuardar = document.getElementById("btnGuardarContrato");
+        const radios = document.querySelectorAll('input[name="IdInmueble"]');
+
+        if (radios.length > 0) {
+            btnGuardar.disabled = false;
+        } else {
+            btnGuardar.disabled = true;
+        }
     });
 </script>
