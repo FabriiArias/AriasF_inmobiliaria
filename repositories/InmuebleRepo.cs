@@ -19,7 +19,7 @@ namespace InmobiliariaApp.Repositories
 
         using var connection = _dbConnection.GetConnection();
         using var command = new MySqlCommand(@"
-            SELECT i.*, p.nombre, p.apellido FROM inmueble i JOIN propietario p ON i.dni_propietario = p.dni_propietario WHERE i.activo = 1", connection);
+            SELECT i.*, p.nombre, p.apellido FROM inmueble i JOIN propietario p ON i.dni_propietario = p.dni_propietario WHERE i.activo = 1 AND p.activo = 1", connection);
 
         using var reader = command.ExecuteReader();
         while (reader.Read())
