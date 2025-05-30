@@ -37,6 +37,40 @@ namespace InmobiliariaApp.Repositories
 
             return inquilinos;
         }
+
+        // traer inquilinos paginados
+
+        public List<Inquilino> GetAllInquilinosPaginados(int pagina, int cantidadPorPagina, out int totalRegistros)
+        {
+            var inquilinos = new List<Inquilino>();
+            totalRegistros = 0;
+
+            using var connection = _dbConnection.GetConnection();
+            using var command = new MySqlCommand("SELECT COUNT(*) FROM Inquilino WHERE activo = 1", connection);
+            totalRegistros = Convert.ToInt32(command.ExecuteScalar());
+
+            command.CommandText = "SELECT * FROM Inquilino WHERE activo = 1 LIMIT @Offset, @Limit";
+            command.Parameters.AddWithValue("@Offset", (pagina - 1) * cantidadPorPagina);
+            command.Parameters.AddWithValue("@Limit", cantidadPorPagina);
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                inquilinos.Add(new Inquilino
+                {
+                    Id = reader.GetInt32("id_inquilino"),
+                    DNIInquilino = reader.GetInt32("DNI_Inquilino"),
+                    Nombre = reader.GetString("nombre"),
+                    Apellido = reader.GetString("apellido"),
+                    Celular = reader.GetInt32("celular"),
+                    Email = reader.GetString("email")
+                });
+            }
+
+            return inquilinos;
+        }
+
+
         public Inquilino? GetInquilinoByDNI(int id)
         {
 

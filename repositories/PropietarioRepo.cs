@@ -36,6 +36,39 @@ namespace InmobiliariaApp.Repositories
             return propietarios;
         }
 
+
+        // traer todos los propietarios paginados
+
+        public List<Propietario> GetAllPropietariosPaginados(int pagina, int cantidadPorPagina, out int totalRegistros)
+        {
+            var propietarios = new List<Propietario>();
+            totalRegistros = 0;
+
+            using var connection = _dbConnection.GetConnection();
+            using var command = new MySqlCommand("SELECT COUNT(*) FROM Propietario WHERE activo = 1", connection);
+            totalRegistros = Convert.ToInt32(command.ExecuteScalar());
+
+            command.CommandText = "SELECT * FROM Propietario WHERE activo = 1 LIMIT @Offset, @Limit";
+            command.Parameters.AddWithValue("@Offset", (pagina - 1) * cantidadPorPagina);
+            command.Parameters.AddWithValue("@Limit", cantidadPorPagina);
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                propietarios.Add(new Propietario
+                {
+                    DNIPropietario = reader.GetInt32("DNI_Propietario"),
+                    Nombre = reader.GetString("nombre"),
+                    Apellido = reader.GetString("apellido"),
+                    Celular = reader.GetInt32("celular"),
+                    Email = reader.GetString("mail")
+                });
+            }
+
+            return propietarios;
+        }
+
+
         public Propietario? GetPropietarioByDNI(int dni){
             
             Console.WriteLine("DNI repo: " + dni);

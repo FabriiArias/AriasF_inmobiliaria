@@ -1,0 +1,60 @@
+@{
+    ViewData["Title"] = "Login";
+}
+
+<style>
+    body {
+        background-size: cover;
+        margin: 0;
+    }
+
+    .login-container {
+        backdrop-filter: blur(15px);
+        background-color: rgba(255, 255, 255, 0.15);
+        border: 1px solid white;
+        border-radius: 15px;
+        padding: 30px;
+        width: 350px;
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+    }
+
+    .form-label {
+        color: white;
+    }
+
+    .form-control {
+        font-size: 0.9rem;
+        padding: 6px 10px;
+    }
+
+    .btn-login {
+        width: 100%;
+    }
+
+    .centered {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-top: 50px;
+    }
+</style>
+
+<div class="centered">
+    <div class="login-container">
+        <h4 class="text-center text-white mb-4">Iniciar Sesión</h4>
+
+        <form method="post" asp-action="Login">
+            <div class="mb-3">
+                <label for="usuario" class="form-label">Email</label>
+                <input type="text" name="usuario" id="usuario" class="form-control" placeholder="Ingrese su mail" required />
+            </div>
+
+            <div class="mb-4">
+                <label for="clave" class="form-label">Contraseña</label>
+                <input type="password" name="clave" id="clave" class="form-control" placeholder="Ingrese su contraseña" required />
+            </div>
+
+            <button type="submit" class="btn btn-success btn-login">Ingresar</button>
+        </form>
+    </div>
+</div>

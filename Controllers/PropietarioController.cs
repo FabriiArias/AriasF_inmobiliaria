@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace InmobiliariaApp.Controllers
 {
+    [Authorize]
     public class PropietarioController : Controller
     {
         private readonly PropietarioRepo _propietarioRepo;
@@ -15,12 +16,20 @@ namespace InmobiliariaApp.Controllers
         }
         // por aca antes de todo hay que verificar al usuario logueado
         // si esta log y si es admin o empleado
-        public IActionResult Listar()
+        public IActionResult Listar(int pagina = 1)
         {
-            //return View();
-            var propietarios = _propietarioRepo.GetAllPropietarios();
+            const int cantidadPorPagina = 10;
+
+            var propietarios = _propietarioRepo.GetAllPropietariosPaginados(pagina, cantidadPorPagina, out int totalRegistros);
+
+            int totalPaginas = (int)Math.Ceiling((double)totalRegistros / cantidadPorPagina);
+
+            ViewBag.PaginaActual = pagina;
+            ViewBag.TotalPaginas = totalPaginas;
+
             return View(propietarios);
         }
+
 
         public IActionResult Detalle(int dni)
         {
@@ -42,9 +51,12 @@ namespace InmobiliariaApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                TempData["SuccessMessage"] = "Regresando a la lista de propietarios";
+                TempData["Mensaje"] = "Propietario creado correctamente";
                 _propietarioRepo.InsertPropietario(propietario);
-                //return RedirectToAction("Listar");
+                return View("Crear", propietario);
+            }else{
+                TempData["ErrorMessage"] = "Error al crear el propietario. Por favor, revise los datos ingresados.";
+                return View("Crear", propietario);
             }
             return View("Crear", propietario);
         }
@@ -64,12 +76,16 @@ namespace InmobiliariaApp.Controllers
             if (ModelState.IsValid)
             {
                 _propietarioRepo.UpdatePropietario(propietario);
-                TempData["SuccessMessage"] = "Propietario actualizado correctamente";
-                return RedirectToAction("Listar");
+                TempData["Mensaje"] = "Propietario actualizado correctamente";
+                return View("Editar", propietario);
+            }else{
+                TempData["ErrorMessage"] = "Error al actualizar el propietario. Por favor, revise los datos ingresados.";
+                return View("Editar", propietario);
             }
-            return View("Editar", propietario);
+            
         }
         [HttpPost]
+        [Authorize(Roles = "administrador")]
         public IActionResult Eliminar(int dni)
         {
             _propietarioRepo.deletePropietario(dni);

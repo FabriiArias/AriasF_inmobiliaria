@@ -2,13 +2,88 @@
 @{
     ViewData["Title"] = "Listar Inmuebles";
 
+    // valores actuales del query para reutilizar en la paginacion
+    string accion = ViewContext.RouteData.Values["action"].ToString();
+    string fecha = Context.Request.Query["fecha"];
+    string nombrePropietario = Context.Request.Query["nombrePropietario"];
+    string soloDisponibles = Context.Request.Query["soloDisponibles"];
 }
 
 <h1 class="text-center mb-4">Listado de Inmuebles</h1>
 
-
 <div class="d-flex justify-content-center mb-3 gap-2">
     <a class="btn btn-success" asp-action="Crear">Agregar nuevo inmueble</a>
+</div>
+
+<!-- Botón para mostrar/ocultar filtros -->
+<div class="d-flex justify-content-center mb-3">
+    <button id="toggleFiltrosBtn" class="btn btn-primary">Mostrar filtros</button>
+</div>
+
+<!-- ------------------------- filtraciones -------------------------- -->
+
+<style>
+    .filtro-container {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .filtro-form {
+        flex: 1 1 30%;
+        max-width: 33%;
+        min-width: 220px;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 0.5rem;
+        border: 1px solid #dee2e6;
+    }
+
+    .filtro-form label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .filtro-form input {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .filtro-form button {
+        display: block;
+        margin: 0.5rem auto 0;
+        padding: 0.4rem 1.2rem;
+        font-size: 0.9rem;
+    }
+</style>
+
+<div id="filtroContainer" class="filtro-container d-none">
+    <form asp-action="BuscarPorPropietarioPaginado" method="get" class="filtro-form">
+        <label for="nombrePropietario">Propietario</label>
+        <input type="text" name="nombrePropietario" class="form-control" placeholder="Ej: Juan Pérez" />
+        <button class="btn btn-outline-primary">Buscar</button>
+    </form>
+
+    <form asp-action="BuscarPorFechaPaginado" method="get" class="filtro-form">
+        <label for="fecha">Fecha Disponible</label>
+        <input type="date" name="fecha" class="form-control" />
+        <button class="btn btn-outline-primary">Buscar</button>
+    </form>
+
+    <form asp-action="BuscarDisponiblesPaginado" method="get" class="filtro-form text-center">
+        <label for="disponible">Solo Disponibles</label>
+        <input type="hidden" name="soloDisponibles" value="true" />
+        <button class="btn btn-outline-primary">Ver Disponibles</button>
+    </form>
+
+    <div class="d-flex justify-content-center mb-3 gap-2">
+        <a class="btn btn-sm btn-secondary" asp-area="" asp-controller="Inmueble" asp-action="Listar">Limpiar filtros</a>
+    </div>
 </div>
 
 <table class="table">
@@ -29,7 +104,6 @@
     <tbody class="text-light bg-table-p bg-gradient">
         @foreach (var inmueble in Model)
         {
-
             <tr class="text-center align-middle">
                 <td>@inmueble.IdInmueble</td>
                 <td>
@@ -37,15 +111,16 @@
                         @inmueble.NombrePropietario @inmueble.ApellidoPropietario
                     </a>
                 </td>
-
                 <td>@inmueble.Tipo</td>
                 <td>@inmueble.Direccion</td>
                 <td>@inmueble.Ambientes</td>
                 <td>@inmueble.Precio</td>
-                <td class="align-middle">@if (@inmueble.Estado == "disponible")
+                <td>
+                    @if (inmueble.Estado == "disponible")
                     {
                         <p class="text-success fw-bold m-0">Disponible</p>
-                    }else if (@inmueble.Estado == "suspendido")
+                    }
+                    else if (inmueble.Estado == "suspendido")
                     {
                         <p class="text-warning fw-bold m-0">Suspendido</p>
                     }
@@ -58,36 +133,100 @@
                 <td>
                     @if (!string.IsNullOrEmpty(inmueble.Portada))
                     {
-
                         <div class="imagen-contenedor">
                             <img src="@inmueble.Portada" alt="Portada" style="width: 180px; height: auto;" />
                             <form asp-action="BorrarPortada" method="post" class="boton-borrar">
                                 <input type="hidden" name="id" value="@inmueble.IdInmueble" />
-                                <button title="Eliminar" type="submit" class="btn bg-light btn-sm"
-                                    onclick="return confirm('¿Seguro que deseas eliminar esta imagen?');">❌</button>
+                                <button title="Eliminar" type="submit" class="btn bg-light btn-sm" onclick="return confirm('¿Seguro que deseas eliminar esta imagen?');">❌</button>
                             </form>
                         </div>
                     }
-
                     else
                     {
                         <span>Sin portada</span>
                     }
-
                 </td>
-
                 <td>
-                    <a title="Detalles" class="btn btn-secondary" asp-action="Detalle" asp-route-id="@inmueble.IdInmueble">📜
-                    </a>
+                    <a title="Detalles" class="btn btn-secondary" asp-action="Detalle" asp-route-id="@inmueble.IdInmueble">📜</a>
                     <a title="Editar" class="btn btn-primary" asp-action="Editar" asp-route-id="@inmueble.IdInmueble">✏️</a>
-                    
-                    <form asp-action="Eliminar" method="post" style="display:inline;">
-                        <input type="hidden" name="id" value="@inmueble.IdInmueble" />
-                        <button title="Eliminar" type="submit" class="btn btn-danger"
-                            onclick="return confirm('¿Seguro que deseas eliminar este propietario?');">🗑️</button>
-                    </form>
+
+                    @if (User.IsInRole("administrador"))
+                    {
+                        <form asp-action="Eliminar" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@inmueble.IdInmueble" />
+                            <button title="Eliminar" type="submit" class="btn btn-danger btn-eliminar">🗑️</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span class="btn btn-danger" style="opacity: 0.5; cursor: not-allowed;" title="Usted no tiene permiso para realizar esta acción">🗑️</span>
+                    }
                 </td>
             </tr>
         }
     </tbody>
 </table>
+
+@if (ViewBag.TotalPaginas > 1)
+{
+    <nav aria-label="Paginación">
+        <ul class="pagination justify-content-center">
+            @for (int i = 1; i <= ViewBag.TotalPaginas; i++)
+            {
+                var routeValues = new Dictionary<string, object> { { "pagina", i } };
+                if (!string.IsNullOrEmpty(fecha)) routeValues["fecha"] = fecha;
+                if (!string.IsNullOrEmpty(nombrePropietario)) routeValues["nombrePropietario"] = nombrePropietario;
+                if (!string.IsNullOrEmpty(soloDisponibles)) routeValues["soloDisponibles"] = soloDisponibles;
+
+                <li class="page-item @(i == ViewBag.PaginaActual ? "active" : "")">
+                    <a class="page-link" href="@Url.Action(accion, routeValues)">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}
+
+<!-- mostrar/ocultar filtros -->
+<script>
+    const toggleBtn = document.getElementById("toggleFiltrosBtn");
+    const filtroContainer = document.getElementById("filtroContainer");
+
+    toggleBtn.addEventListener("click", () => {
+        const visible = !filtroContainer.classList.contains("d-none");
+        filtroContainer.classList.toggle("d-none");
+        toggleBtn.textContent = visible ? "Mostrar filtros" : "Cerrar filtros";
+    });
+</script>
+
+
+<!-- alert confimr -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Seleccionamos todos los botones con clase btn-eliminar
+        const botonesEliminar = document.querySelectorAll('.btn-eliminar');
+
+        botonesEliminar.forEach(function (boton) {
+            boton.addEventListener('click', function (e) {
+                e.preventDefault(); // Prevenimos el envío automático
+
+                const form = boton.closest('form'); // Obtenemos el formulario padre
+
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "¿Seguro que deseas eliminar este propietario?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit(); // Enviamos el formulario si confirma
+                    }
+                });
+            });
+        });
+    });
+</script>

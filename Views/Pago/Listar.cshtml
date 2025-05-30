@@ -1,0 +1,200 @@
+@model IEnumerable<InmobiliariaApp.Models.Pago>
+@{
+    ViewData["Title"] = "Listar pagos";
+}
+
+<h1 class="text-center p-3">Listado de pagos</h1>
+
+<div class="d-flex justify-content-center mb-3 gap-2">
+    <a class="btn btn-success" asp-action="Crear">Crear nuevo pago</a>
+</div>
+
+<!-- Botón para mostrar/ocultar filtros -->
+<div class="d-flex justify-content-center mb-3">
+    <button id="toggleFiltrosBtn" class="btn btn-primary">Mostrar filtros</button>
+</div>
+
+<style>
+    .filtro-container {
+    display: flex;
+    flex-direction: column; 
+    align-items: center;     
+    gap: 1.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    }
+
+
+    .filtro-form {
+    width: 100%;
+    max-width: 400px;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-radius: 0.5rem;
+    border: 1px solid #dee2e6;
+    }
+
+
+    .filtro-form label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .filtro-form input {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .filtro-form button {
+        display: block;
+        margin: 0.5rem auto 0;
+        padding: 0.4rem 1.2rem;
+        font-size: 0.9rem;
+    }
+</style>
+
+<div id="filtroContainer" class="filtro-container d-none d-flex flex-column">
+
+    <form asp-action="ListarPorContrato" method="get" class="filtro-form">
+        <label for="contratoId" class="form-label">Buscar contrato:</label>
+        <select id="contratoId" name="contratoId" class="form-control" style="width: 100%;">
+        </select>
+        <input type="hidden" id="hiddenContratoId" name="contratoId" />
+
+        <button type="submit" class="btn btn-outline-primary mt-2">Buscar</button>
+    </form>
+
+    <div class="d-flex justify-content-center mb-3 gap-2">
+        <a class="btn btn-sm btn-secondary" asp-area="" asp-controller="Inmueble" asp-action="Listar">Limpiar filtros</a>
+    </div>
+</div>
+
+<table class="table">
+    <thead class="text-black bg-light bg-gradient">
+        <tr class="text-center">
+            <th scope="col">Nro</th>
+            <th scope="col">Contrato</th>
+            <th scope="col">Fecha Pago</th>
+            <th scope="col">Importe</th>
+            <th scope="col">Detalle</th>
+            <th scope="col">Estado</th>
+            <th scope="col">Creado por</th>
+            <th scope="col">Acciones</th>
+        </tr>
+    </thead>
+    <tbody class="text-light align-middle bg-table-p bg-gradient">
+        @foreach (var p in Model)
+        {
+            <tr class="text-center">
+                <td>@p.IdPago</td>
+                <td>@p.IdContrato</td>
+                <td>@(p.FechaPago?.ToString("dd/MM/yyyy") ?? "No abonado")</td>
+                <td>@p.Importe</td>
+                <td>@if(p.Detalle == "")
+                    {
+                        <span>Sin detalle</span>
+                    }
+                    else
+                    {
+                        @p.Detalle
+                    }</td>
+                <td>@p.Estado</td>
+                <td>@p.NyAUser</td>
+                <td>
+                    <a class="btn btn-secondary" asp-action="Detalle" title="Detalles" asp-route-id="@p.IdPago">📜
+                    </a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<!-- paginado -->
+
+@if (ViewBag.TotalPaginas > 1)
+{
+    <nav>
+        <ul class="pagination">
+            @for (int i = 1; i <= ViewBag.TotalPaginas; i++)
+            {
+                <li class="page-item @(i == ViewBag.PaginaActual ? "active" : "")">
+                    <a class="page-link" href="@(
+                        ViewBag.ContratoId != null
+                        ? Url.Action("ListarPorContrato", new { contratoId = ViewBag.ContratoId, pagina = i })
+                        : Url.Action("Listar", new { pagina = i })
+                    )">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}
+
+
+
+
+<!-- mostrar/ocultar filtros -->
+<script>
+    const toggleBtn = document.getElementById("toggleFiltrosBtn");
+    const filtroContainer = document.getElementById("filtroContainer");
+
+    toggleBtn.addEventListener("click", () => {
+        const visible = !filtroContainer.classList.contains("d-none");
+        filtroContainer.classList.toggle("d-none");
+        toggleBtn.textContent = visible ? "Mostrar filtros" : "Cerrar filtros";
+    });
+</script>
+
+
+<!-- select 2 -->
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#contratoId').select2({
+                placeholder: 'Inquilino / direccion del inmueble',
+                minimumInputLength: 1,
+                ajax: {
+                    url: '/Contrato/GetAllContratosSelect2', 
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return { term: params.term };
+                    },
+                    processResults: function (data) {
+                        return { results: data };
+                    },
+                    cache: true
+                },
+                language: {
+                    inputTooShort: () => '<span class="text-black">Ingrese al menos 1 caracter</span>',
+                    noResults: () => '<span class="text-black">No se encontraron resultados</span>',
+                    searching: () => '<span class="text-black">Buscando...</span>'
+                },
+                escapeMarkup: function (markup) {
+                    return markup;
+                },
+                templateResult: function (data) {
+                    if (data.loading) return data.text;
+                    return $('<span class="text-black">' + data.text + '</span>');
+                },
+                templateSelection: function (data) {
+                    return $('<span class="text-black">' + data.text + '</span>');
+                }
+            });
+
+            // Cuando seleccionas un inmueble, actualiza el campo oculto con el id
+            $('#contratoId').on('select2:select', function (e) {
+                const idContrato = e.params.data.id;
+                $('#hiddenContratoId').val(idContrato);
+            });
+
+            // Opcional: si quieres limpiar el campo oculto al limpiar la selección
+            $('#contratoId').on('select2:clear', function () {
+                $('#hiddenContratoId').val('');
+            });
+        });
+    </script>
+}

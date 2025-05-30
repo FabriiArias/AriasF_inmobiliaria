@@ -2,6 +2,8 @@
 
 @{
     ViewData["Title"] = "Anular Contrato";
+    var fechaHoy = DateTime.Now.ToString("yyyy-MM-dd");
+    var fechaHoyMostrar = DateTime.Now.ToString("dd/MM/yyyy");
 }
 
 <h1 class="text-center p-3 text-danger">Anular Contrato</h1>
@@ -10,15 +12,16 @@
     class="d-flex flex-column gap-2 justify-content-center align-items-center w-50 mx-auto">
 
     <input type="hidden" asp-for="IdContrato" />
+    <input type="hidden" id="fechaInicio" value="@Model.FechaInicio.ToString("yyyy-MM-dd")" />
 
     <div class="w-100">
         <label class="form-label fw-bold text-warning text-center">¿Está seguro que desea anular este contrato?</label>
-        <label class="form-label fw-bold text-warning text-center">No se podra dar de alta de nuevo</label>
+        <label class="form-label fw-bold text-warning text-center">No se podrá dar de alta de nuevo</label>
     </div>
 
     <div class="w-100">
         <label class="form-label">Fecha de Anulación</label>
-        <input disabled type="text" class="form-control" value="@DateTime.Now.ToShortDateString()" readonly />
+        <input disabled type="text" class="form-control" value="@fechaHoyMostrar" readonly />
     </div>
 
     <div class="w-100">
@@ -28,8 +31,7 @@
     </div>
 
     <div class="w-100 text-center mt-3 d-flex justify-content-center gap-3">
-        <button type="submit" class="btn btn-danger"
-            onclick="return confirm('¿Está seguro que desea anular este contrato?')">Anular</button>
+        <button type="submit" class="btn btn-danger btn-eliminar">Anular</button>
         <a asp-action="Listar" class="btn btn-secondary">Cancelar</a>
     </div>
 </form>
@@ -37,17 +39,55 @@
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const fechaFin = document.getElementById("fechaFin");
-        const hoy = new Date().toISOString().split("T")[0];
-        fechaFin.setAttribute("min", hoy);
+        const fechaInicio = new Date(document.getElementById("fechaInicio").value);
+        const hoy = new Date();
+
+        const yyyyMmDd = date => date.toISOString().split("T")[0];
+        fechaFin.setAttribute("min", yyyyMmDd(hoy));
 
         fechaFin.addEventListener("change", function () {
             const fin = new Date(fechaFin.value);
-            const hoyDate = new Date(hoy);
 
-            if (fin < hoyDate) {
+            if (fin < hoy) {
                 alert("La fecha de fin debe ser hoy o una fecha futura.");
                 fechaFin.value = "";
+            } else if (fin <= fechaInicio) {
+                alert("La fecha de fin debe ser posterior a la fecha de inicio del contrato.");
+                fechaFin.value = "";
             }
+        });
+    });
+</script>
+
+
+<!-- alert confimr -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Seleccionamos todos los botones con clase btn-eliminar
+        const botonesEliminar = document.querySelectorAll('.btn-eliminar');
+
+        botonesEliminar.forEach(function (boton) {
+            boton.addEventListener('click', function (e) {
+                e.preventDefault(); // Prevenimos el envío automático
+
+                const form = boton.closest('form'); // Obtenemos el formulario padre
+
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "¿Seguro que deseas eliminar este propietario?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit(); // Enviamos el formulario si confirma
+                    }
+                });
+            });
         });
     });
 </script>

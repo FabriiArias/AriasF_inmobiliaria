@@ -47,6 +47,155 @@ namespace InmobiliariaApp.Repositories
             return contratos;
         }
 
+        // ------ filtrar por inmueble -------------
+
+       public List<Contrato> GetContratosPorInmueble(int idInmueble, int pagina, int cantidadPorPagina, out int totalRegistros)
+        {
+            var contratos = new List<Contrato>();
+            totalRegistros = 0;
+
+            using var connection = _dbConnection.GetConnection();
+
+            // Obtener total de registros
+            using (var countCmd = new MySqlCommand(@"
+                SELECT COUNT(*) 
+                FROM contrato c 
+                WHERE c.id_inmueble = @IdInmueble;", connection))
+            {
+                countCmd.Parameters.AddWithValue("@IdInmueble", idInmueble);
+                totalRegistros = Convert.ToInt32(countCmd.ExecuteScalar());
+            }
+
+            int offset = (pagina - 1) * cantidadPorPagina;
+
+            using var command = new MySqlCommand(@"
+                SELECT c.*, CONCAT(i.nombre, ' ', i.apellido) AS NyA_inquilino, im.direccion, im.portada 
+                FROM contrato c 
+                JOIN inquilino i ON i.id_inquilino = c.id_inquilino 
+                JOIN inmueble im ON c.id_inmueble = im.id_inmueble 
+                WHERE c.id_inmueble = @IdInmueble 
+                LIMIT @limit OFFSET @offset;", connection);
+
+            command.Parameters.AddWithValue("@IdInmueble", idInmueble);
+            command.Parameters.AddWithValue("@limit", cantidadPorPagina);
+            command.Parameters.AddWithValue("@offset", offset);
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                contratos.Add(new Contrato
+                {
+                    IdContrato = reader.GetInt32("id_contrato"),
+                    IdInmueble = reader.GetInt32("id_inmueble"),
+                    IdInquilino = reader.GetInt32("id_inquilino"),
+                    CreadoPor = reader.IsDBNull(reader.GetOrdinal("creado_por")) ? null : reader.GetInt32("creado_por"),
+                    AnuladoPor = reader.IsDBNull(reader.GetOrdinal("anulado_por")) ? null : reader.GetInt32("anulado_por"),
+                    FechaInicio = reader.GetDateTime("f_inicio"),
+                    FechaFin = reader.GetDateTime("f_fin"),
+                    MontoMensual = reader.GetDouble("monto_mensual"),
+                    Estado = reader.GetString("estado"),
+                    NyAInquilino = reader.GetString("NyA_inquilino"),
+                    Direccion = reader.GetString("direccion"),
+                    Portada = reader.IsDBNull(reader.GetOrdinal("portada")) ? null : reader.GetString("portada")
+                });
+            }
+
+            return contratos;
+        }
+
+
+        // filtro fecha vigente inicio fin
+
+        public List<Contrato> GetContratosPorFecha(DateTime fechaInicio, DateTime fechaFin, int pagina, int cantidadPorPagina, out int totalRegistros)
+        {
+            var contratos = new List<Contrato>();
+            totalRegistros = 0;
+
+            using var connection = _dbConnection.GetConnection();
+
+            // Obtener total de registros
+            using (var countCmd = new MySqlCommand(@"
+                SELECT COUNT(*) 
+                FROM contrato c 
+                WHERE c.f_inicio = @FechaInicio AND c.f_fin = @FechaFin AND c.estado = 'vigente';", connection))
+            {
+                countCmd.Parameters.AddWithValue("@FechaInicio", fechaInicio);
+                countCmd.Parameters.AddWithValue("@FechaFin", fechaFin);
+
+                totalRegistros = Convert.ToInt32(countCmd.ExecuteScalar());
+            }
+
+            int offset = (pagina - 1) * cantidadPorPagina;
+
+            using var command = new MySqlCommand(@"
+                SELECT c.*, CONCAT(i.nombre, ' ', i.apellido) AS NyA_inquilino, im.direccion, im.portada  
+                FROM contrato c 
+                JOIN inquilino i ON i.id_inquilino = c.id_inquilino 
+                JOIN inmueble im ON c.id_inmueble = im.id_inmueble 
+                WHERE c.f_inicio = @FechaInicio AND c.f_fin = @FechaFin AND c.estado = 'vigente' 
+                LIMIT @limit OFFSET @offset;", connection);
+
+            command.Parameters.AddWithValue("@FechaInicio", fechaInicio);
+            command.Parameters.AddWithValue("@FechaFin", fechaFin);
+            command.Parameters.AddWithValue("@limit", cantidadPorPagina);
+            command.Parameters.AddWithValue("@offset", offset);
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                contratos.Add(new Contrato
+                {
+                    IdContrato = reader.GetInt32("id_contrato"),
+                    IdInmueble = reader.GetInt32("id_inmueble"),
+                    IdInquilino = reader.GetInt32("id_inquilino"),
+                    CreadoPor = reader.IsDBNull(reader.GetOrdinal("creado_por")) ? null : reader.GetInt32("creado_por"),
+                    AnuladoPor = reader.IsDBNull(reader.GetOrdinal("anulado_por")) ? null : reader.GetInt32("anulado_por"),
+                    FechaInicio = reader.GetDateTime("f_inicio"),
+                    FechaFin = reader.GetDateTime("f_fin"),
+                    MontoMensual = reader.GetDouble("monto_mensual"),
+                    Estado = reader.GetString("estado"),
+                    NyAInquilino = reader.GetString("NyA_inquilino"),
+                    Direccion = reader.GetString("direccion"),
+                    Portada = reader.IsDBNull(reader.GetOrdinal("portada")) ? null : reader.GetString("portada")
+                });
+            }
+
+            return contratos;
+        }
+
+
+        /*public List<Contrato> GetContratosPorFecha(DateTime fechaInicio, DateTime fechaFin)
+        {
+            var contratos = new List<Contrato>();
+
+            using var connection = _dbConnection.GetConnection();
+            using var command = new MySqlCommand("SELECT c.*, CONCAT(i.nombre, ' ', i.apellido) AS NyA_inquilino, im.direccion, im.portada  FROM contrato c JOIN inquilino i ON i.id_inquilino = c.id_inquilino JOIN inmueble im ON c.id_inmueble = im.id_inmueble WHERE c.f_inicio = @FechaInicio AND c.f_fin = @FechaFin AND c.estado = 'vigente';", connection);
+            command.Parameters.AddWithValue("@FechaInicio", fechaInicio);
+            command.Parameters.AddWithValue("@FechaFin", fechaFin);
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                contratos.Add(new Contrato
+                {
+                    IdContrato = reader.GetInt32("id_contrato"),
+                    IdInmueble = reader.GetInt32("id_inmueble"),
+                    IdInquilino = reader.GetInt32("id_inquilino"),
+                    CreadoPor = reader.IsDBNull(reader.GetOrdinal("creado_por")) ? null : reader.GetInt32("creado_por"),
+                    AnuladoPor = reader.IsDBNull(reader.GetOrdinal("anulado_por")) ? null : reader.GetInt32("anulado_por"),
+                    FechaInicio = reader.GetDateTime("f_inicio"),
+                    FechaFin = reader.GetDateTime("f_fin"),
+                    MontoMensual = reader.GetDouble("monto_mensual"),
+                    Estado = reader.GetString("estado"),
+                    NyAInquilino = reader.GetString("NyA_inquilino"),
+                    Direccion = reader.GetString("direccion"),
+                    Portada = reader.IsDBNull(reader.GetOrdinal("portada")) ? null : reader.GetString("portada")
+                });
+            }
+
+            return contratos;
+        }*/
+
         // Método para obtener un contrato por ID
         public Contrato? GetById(int id)
         {
@@ -148,41 +297,98 @@ namespace InmobiliariaApp.Repositories
         }
 
         
+        // metodos para los filtraados
+        
+        public List<Contrato> GetContratosPorInquilino(int idInquilino)
+        {
+            var contratos = new List<Contrato>();
+
+            using var connection = _dbConnection.GetConnection();
+            using var command = new MySqlCommand(@"SELECT c.*, im.direccion, im.portada FROM contrato c JOIN inmueble im ON c.id_inmueble = im.id_inmueble WHERE c.id_inquilino = @IdInquilino AND c.estado = 'Vigente';", connection);
+            command.Parameters.AddWithValue("@IdInquilino", idInquilino);
+
+            using var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                contratos.Add(new Contrato
+                {
+                    IdContrato = reader.GetInt32("id_contrato"),
+                    IdInmueble = reader.GetInt32("id_inmueble"),
+                    IdInquilino = reader.GetInt32("id_inquilino"),
+                    CreadoPor = reader.IsDBNull(reader.GetOrdinal("creado_por")) ? null : reader.GetInt32("creado_por"),
+                    AnuladoPor = reader.IsDBNull(reader.GetOrdinal("anulado_por")) ? null : reader.GetInt32("anulado_por"),
+                    FechaInicio = reader.GetDateTime("f_inicio"),
+                    FechaFin = reader.GetDateTime("f_fin"),
+                    MontoMensual = reader.GetDouble("monto_mensual"),
+                    Estado = reader.GetString("estado"),
+                    Direccion = reader.GetString("direccion"),
+                    Portada = reader.IsDBNull(reader.GetOrdinal("portada")) ? null : reader.GetString("portada")
+
+                });
+            }
+
+            return contratos;
+        }
+
+    public List<Contrato> GetContratosPorDiasHastaFinalizar(int dias, int pagina, int cantidadPorPagina, out int totalRegistros)
+{
+    var contratos = new List<Contrato>();
+    totalRegistros = 0;
+    var hoy = DateTime.Today;
+    var fechaLimite = hoy.AddDays(dias);
+
+    using var connection = _dbConnection.GetConnection();
+
+    // Contar total de registros
+    using (var countCmd = new MySqlCommand(@"
+        SELECT COUNT(*) 
+        FROM contrato c 
+        WHERE c.f_fin BETWEEN @Hoy AND @FechaLimite;", connection))
+    {
+        countCmd.Parameters.AddWithValue("@Hoy", hoy);
+        countCmd.Parameters.AddWithValue("@FechaLimite", fechaLimite);
+        totalRegistros = Convert.ToInt32(countCmd.ExecuteScalar());
+    }
+
+    int offset = (pagina - 1) * cantidadPorPagina;
+
+    using var command = new MySqlCommand(@"
+        SELECT c.*, CONCAT(i.nombre, ' ', i.apellido) AS NyA_inquilino, im.direccion, im.portada 
+        FROM contrato c 
+        JOIN inquilino i ON i.id_inquilino = c.id_inquilino 
+        JOIN inmueble im ON c.id_inmueble = im.id_inmueble 
+        WHERE c.f_fin BETWEEN @Hoy AND @FechaLimite 
+        LIMIT @limit OFFSET @offset;", connection);
+
+    command.Parameters.AddWithValue("@Hoy", hoy);
+    command.Parameters.AddWithValue("@FechaLimite", fechaLimite);
+    command.Parameters.AddWithValue("@limit", cantidadPorPagina);
+    command.Parameters.AddWithValue("@offset", offset);
+
+    using var reader = command.ExecuteReader();
+    while (reader.Read())
+    {
+        contratos.Add(new Contrato
+        {
+            IdContrato = reader.GetInt32("id_contrato"),
+            IdInmueble = reader.GetInt32("id_inmueble"),
+            IdInquilino = reader.GetInt32("id_inquilino"),
+            CreadoPor = reader.IsDBNull(reader.GetOrdinal("creado_por")) ? null : reader.GetInt32("creado_por"),
+            AnuladoPor = reader.IsDBNull(reader.GetOrdinal("anulado_por")) ? null : reader.GetInt32("anulado_por"),
+            FechaInicio = reader.GetDateTime("f_inicio"),
+            FechaFin = reader.GetDateTime("f_fin"),
+            MontoMensual = reader.GetDouble("monto_mensual"),
+            Estado = reader.GetString("estado"),
+            NyAInquilino = reader.GetString("NyA_inquilino"),
+            Direccion = reader.GetString("direccion"),
+            Portada = reader.IsDBNull(reader.GetOrdinal("portada")) ? null : reader.GetString("portada")
+        });
+    }
+
+    return contratos;
+}
 
 
 
-
-
-
-        // Método para actualizar un contrato
-
-        //-------------------------------------------- CREAR EL METODO DE NUEVO ---------------------------------
-        // public void UpdateContrato(Contrato contrato)
-        // {
-        //     using var connection = _dbConnection.GetConnection();
-        //     using var command = new MySqlCommand(
-        //         "UPDATE Contrato SET id_inquilino = @InquilinoId, id_inmueble = @InmuebleId, fecha_inicio = @FechaInicio, " +
-        //         "fecha_fin = @FechaFin, monto_mensual = @MontoMensual, estado = @Vigente WHERE id_contato = @Id", connection);
-
-        //     command.Parameters.AddWithValue("@Id", contrato.IdContrato);
-        //     command.Parameters.AddWithValue("@InquilinoId", contrato.DNIInquilino);
-        //     command.Parameters.AddWithValue("@InmuebleId", contrato.IdInmueble);
-        //     command.Parameters.AddWithValue("@FechaInicio", contrato.FechaInicio);
-        //     command.Parameters.AddWithValue("@FechaFin", contrato.FechaFin);
-        //     command.Parameters.AddWithValue("@MontoMensual", contrato.MontoMensual);
-        //     command.Parameters.AddWithValue("@Vigente", contrato.Activo);
-
-        //     command.ExecuteNonQuery();
-        // }
-
-        // Método para eliminar un contrato
-        // public void Delete(int id)
-        // {
-        //     using var connection = _dbConnection.GetConnection();
-        //     using var command = new MySqlCommand("DELETE FROM Contrato WHERE id_contrato = @Id", connection);
-        //     command.Parameters.AddWithValue("@Id", id);
-
-        //     command.ExecuteNonQuery();
-        // }
     }
 }

@@ -39,17 +39,82 @@
                 <td>@propietario.Celular</td>
                 <td>@propietario.Email</td>
                 <td>
-                    <a class="btn btn-secondary" asp-action="Detalle" title="Detalles" asp-route-dni="@propietario.DNIPropietario">📜
-                    </a>
-                    <a class="btn btn-primary" asp-action="Editar" title="Editar" asp-route-dni="@propietario.DNIPropietario">✏️</a>
-                    
-                    <form asp-action="Eliminar" method="post" style="display:inline;">
-                        <input type="hidden" name="dni" value="@propietario.DNIPropietario" />
-                        <button title="Eliminar" type="submit" class="btn btn-danger"
-                            onclick="return confirm('¿Seguro que deseas eliminar este propietario?');">🗑️</button>
-                    </form>
+                    <a class="btn btn-secondary" asp-action="Detalle" title="Detalles"
+                        asp-route-dni="@propietario.DNIPropietario">📜</a>
+
+                    <a class="btn btn-primary" asp-action="Editar" title="Editar"
+                        asp-route-dni="@propietario.DNIPropietario">✏️</a>
+
+                    @if (User.IsInRole("administrador"))
+                    {
+                        <form asp-action="Eliminar" method="post" style="display:inline;">
+                            <input type="hidden" name="dni" value="@propietario.DNIPropietario" />
+                            <button title="Eliminar" type="button" class="btn btn-danger btn-eliminar">🗑️</button>
+                        </form>
+
+                    }
+                    else
+                    {
+                        <span class="btn btn-danger" style="opacity: 0.5; cursor: not-allowed;"
+                            title="Usted no tiene permiso para realizar esta acción">
+                            🗑️
+                        </span>
+                    }
                 </td>
+
             </tr>
         }
     </tbody>
 </table>
+
+@if (ViewBag.TotalPaginas > 1)
+{
+    <nav aria-label="Paginación">
+        <ul class="pagination justify-content-center">
+            @for (int i = 1; i <= ViewBag.TotalPaginas; i++)
+            {
+                var routeValues = new Dictionary<string, object>
+                {
+                { "pagina", i }
+                };
+
+                <li class="page-item @(i == ViewBag.PaginaActual ? "active" : "")">
+                    <a class="page-link" href="@Url.Action("Listar", routeValues)">@i</a>
+                </li>
+            }
+        </ul>
+    </nav>
+}
+
+
+<!-- alert confimr -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Seleccionamos todos los botones con clase btn-eliminar
+        const botonesEliminar = document.querySelectorAll('.btn-eliminar');
+
+        botonesEliminar.forEach(function (boton) {
+            boton.addEventListener('click', function (e) {
+                e.preventDefault(); // Prevenimos el envío automático
+
+                const form = boton.closest('form'); // Obtenemos el formulario padre
+
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "¿Seguro que deseas eliminar este propietario?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit(); // Enviamos el formulario si confirma
+                    }
+                });
+            });
+        });
+    });
+</script>

@@ -1,0 +1,176 @@
+@model InmobiliariaApp.Models.Pago
+
+@{
+    ViewData["Title"] = "Crear pago";
+}
+
+<h1 class="text-center p-3">Nuevo pago</h1>
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <form asp-action="InsertPago" method="post">
+            <!-- Select2 Contrato -->
+            <div class="form-group mb-3">
+                <label for="contratoId" class="form-label">Contrato</label>
+                <select id="contratoId" name="IdContrato" class="form-control" style="width: 100%;" required></select>
+                <input type="hidden" name="IdContrato" id="IdContratoHidden" />
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Importe" class="form-label"></label>
+                <input asp-for="Importe" id="Importe" class="form-control" readonly />
+                <span asp-validation-for="Importe" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Estado" class="form-label">Estado</label>
+                <select asp-for="Estado" id="Estado" class="form-select" required>
+                    <option value="Pendiente" selected>Pendiente</option>
+                    <option value="Pagado">Pagado</option>
+                </select>
+                <span asp-validation-for="Estado" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3" id="fechaPagoGroup" style="display:none;">
+                <label asp-for="FechaPago" class="form-label"></label>
+                <input asp-for="FechaPago" id="FechaPago" type="date" class="form-control" />
+                <span asp-validation-for="FechaPago" class="text-danger"></span>
+            </div>
+
+            <div class="form-group mb-3">
+                <label asp-for="Detalle" class="form-label"></label>
+                <textarea asp-for="Detalle" class="form-control" rows="3"></textarea>
+                <span asp-validation-for="Detalle" class="text-danger"></span>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a asp-action="Listar" class="btn btn-secondary">Volver</a>
+                <button type="submit" class="btn btn-primary">Guardar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Inicializa Select2 para contratos
+            $('#contratoId').select2({
+                placeholder: 'Inquilino / dirección del inmueble',
+                minimumInputLength: 1,
+                ajax: {
+                    url: '/Contrato/GetAllContratosSelect2',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return { term: params.term };
+                    },
+                    processResults: function (data) {
+                        return { results: data };
+                    },
+                    cache: true
+                },
+                language: {
+                    inputTooShort: () => '<span class="text-black">Ingrese al menos 1 caracter</span>',
+                    noResults: () => '<span class="text-black">No se encontraron resultados</span>',
+                    searching: () => '<span class="text-black">Buscando...</span>'
+                },
+                escapeMarkup: function (markup) { return markup; },
+                templateResult: function (data) {
+                    if (data.loading) return data.text;
+                    return $('<span class="text-black">' + data.text + '</span>');
+                },
+                templateSelection: function (data) {
+                    return $('<span class="text-black">' + data.text + '</span>');
+                }
+            });
+
+            // Al seleccionar contrato, autocompleta Importe y FechaPago
+            $('#contratoId').on('select2:select', function (e) {
+                disableValidation = true; // Desactiva la validación temporalmente
+                const idContrato = e.params.data.id;
+                $.get('/Pago/GetContratoInfo', { id: idContrato }, function (data) {
+                    if (data) {
+                        $('#Importe').val(data.monto);
+
+                        if ($('#Estado').val() === 'Pagado') {
+                            $('#fechaPagoGroup').show();
+                            $('#FechaPago').val(new Date().toISOString().split('T')[0]);
+                        } else {
+                            $('#fechaPagoGroup').hide();
+                            $('#FechaPago').val('');
+                        }
+
+                        // Deshabilitar el select2 para que sea readonly
+                        $('#IdContratoHidden').val(idContrato);
+                    }
+                });
+            });
+
+
+            $('#contratoId').on('select2:clear', function () {
+                $('#Importe').val('');
+                $('#FechaPago').val('');
+            });
+
+            $('#Estado').on('change', function () {
+                if ($(this).val() === 'Pagado') {
+                    $('#fechaPagoGroup').show();
+                    if ($('#contratoId').val()) {
+                        $('#FechaPago').val(new Date().toISOString().split('T')[0]);
+                    }
+                } else {
+                    $('#fechaPagoGroup').hide();
+                    $('#FechaPago').val('');
+                }
+            });
+
+            if ($('#Estado').val() !== 'Pagado') {
+                $('#fechaPagoGroup').hide();
+            }
+
+            // Leer id del contrato desde la URL
+            const pathSegments = window.location.pathname.split('/');
+            const idContratoFromUrl = pathSegments[pathSegments.length - 1];
+
+            if (idContratoFromUrl && !isNaN(idContratoFromUrl)) {
+                $.get('/Contrato/GetContratoById', { id: idContratoFromUrl }, function (data) {
+                    if (data && data.id && data.text) {
+                        const option = new Option(data.text, data.id, true, true);
+                        $('#contratoId').append(option).trigger('change');
+
+                        $('#contratoId').trigger({
+                            type: 'select2:select',
+                            params: { data: { id: data.id, text: data.text, montoMensual: data.montoMensual } }
+                        });
+                    }
+                });
+            }
+        });
+    </script>
+}
+@if (TempData["Mensaje"] != null)
+{
+    <script>
+        Swal.fire({
+            title: '¡Éxito!',
+            text: '@TempData["Mensaje"]',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/Inmueble/Listar";
+            }
+        });
+    </script>
+}else if (TempData["Error"] != null)
+{
+    <script>
+        Swal.fire({
+            title: '¡Error!',
+            text: '@TempData["Error"]',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    </script>
+}

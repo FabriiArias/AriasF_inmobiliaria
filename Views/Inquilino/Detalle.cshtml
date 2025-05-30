@@ -12,7 +12,6 @@
             <th scope="col">Apellido</th>
             <th scope="col">Telefono</th>
             <th scope="col">Email</th>
-            <th scope="col">Contratos asociados</th>
             <th scope="col">Acciones</th>
         </tr>
     </thead>
@@ -23,15 +22,23 @@
             <td>@Model.Apellido</td>
             <td>@Model.Celular</td>
             <td>@Model.Email</td>
-            <td> aca habria que cambiar la <br>query para que traiga los asociados</td>
             <td>
                 <a title="Editar" class="btn btn-primary" asp-action="Editar" asp-route-id="@Model.Id">✏️</a>
                     
-                    <form asp-action="Eliminar" method="post" style="display:inline;">
-                        <input type="hidden" name="id" value="@Model.Id" />
-                        <button title="Eliminar" type="submit" class="btn btn-danger"
-                            onclick="return confirm('¿Seguro que deseas eliminar este propietario?');">🗑️</button>
-                    </form>
+                     @if (User.IsInRole("administrador"))
+                    {
+                        <form asp-action="Eliminar" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@Model.Id" />
+                            <button title="Eliminar" type="submit" class="btn btn-danger btn-eliminar">🗑️</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <span class="btn btn-danger" style="opacity: 0.5; cursor: not-allowed;"
+                            title="Usted no tiene permiso para realizar esta acción">
+                            🗑️
+                        </span>
+                    }
             </td>
         </tr>
 
@@ -41,3 +48,36 @@
 <div class="d-flex justify-content-center mb-3 gap-2">
     <a class="btn btn-primary text-center" asp-area="" asp-controller="Inquilino" asp-action="Listar">Volver listado</a>
 </div>
+
+
+<!-- alert confimr -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Seleccionamos todos los botones con clase btn-eliminar
+        const botonesEliminar = document.querySelectorAll('.btn-eliminar');
+
+        botonesEliminar.forEach(function (boton) {
+            boton.addEventListener('click', function (e) {
+                e.preventDefault(); // Prevenimos el envío automático
+
+                const form = boton.closest('form'); // Obtenemos el formulario padre
+
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "¿Seguro que deseas eliminar este propietario?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit(); // Enviamos el formulario si confirma
+                    }
+                });
+            });
+        });
+    });
+</script>

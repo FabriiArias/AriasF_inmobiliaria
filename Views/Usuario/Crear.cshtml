@@ -1,0 +1,83 @@
+@model InmobiliariaApp.Models.Usuario
+
+@{
+    ViewData["Title"] = "Crear Usuario";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4 text-center">Crear nuevo usuario</h2>
+
+    <form asp-action="Insertar" method="post" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-md-4 text-center">
+                <img id="avatarPreview" src="~/uploads/avatar/noavatar.jpg" class="rounded-circle mb-2" alt="Avatar" width="150" height="150" style="object-fit: cover;" />
+                <div class="mb-3">
+                    <input type="file" class="form-control" name="AvatarFile" accept="image/*" onchange="previewAvatar(this)" />
+                </div>
+            </div>
+
+            <div class="col-md-8">
+                <div class="mb-3">
+                    <label asp-for="Nombre" class="form-label"></label>
+                    <input asp-for="Nombre" class="form-control" required/>
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Apellido" class="form-label"></label>
+                    <input asp-for="Apellido" class="form-control" required/>
+                    <span asp-validation-for="Apellido" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" required/>
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Password" class="form-label"></label>
+                    <input asp-for="Password" type="password" class="form-control" required/>
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Contacto" class="form-label"></label>
+                    <input asp-for="Contacto" class="form-control" required/>
+                    <span asp-validation-for="Contacto" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Rol" class="form-label"></label>
+                    <select asp-for="Rol" class="form-select" required>
+                        <option value="empleado">Seleccione un rol</option>
+                        <option value="administrador">Administrador</option>
+                        <option value="empleado">Empleado</option>
+                    </select>
+                    <span asp-validation-for="Rol" class="text-danger"></span>
+                </div>
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-success">Crear usuario</button>
+                    <a asp-action="Listar" class="btn btn-secondary">Cancelar</a>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        function previewAvatar(input) {
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+
+                reader.onload = function (e) {
+                    document.getElementById('avatarPreview').src = e.target.result;
+                }
+
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+}

@@ -1,0 +1,215 @@
+@model InmobiliariaApp.Models.Pago
+@{
+    ViewData["Title"] = "Detalles del Pago";
+}
+
+<div class="container d-flex justify-content-center mt-5">
+    <div class="card shadow-lg p-4"
+        style="max-width: 800px; width: 100%; border-left: 8px solid #007bff; background-color: #F5DEB3 !important;">
+
+        <div class="row mb-12 d-flex justify-content-center">
+            <div class="col-md-12 text-center">
+                <h1 class="text-primary fw-bold">📃 Pago Nro: @Model.IdPago</h1>
+            </div>
+        </div>
+
+        <hr class="bg-dark" style="height: 1px; border: none;" />
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <h5 class="text-primary fw-bold">📄 Contrato</h5>
+                <p class="text-black fst-italic fw-semibold">#@Model.IdContrato</p>
+                <a asp-controller="Contrato" asp-action="Detalle" asp-route-id="@Model.IdContrato" target="_blank">Ver
+                    contrato</a>
+            </div>
+
+            <div class="col-md-6">
+                <h5 class="text-primary fw-bold">📅 Fecha de Pago</h5>
+                <p class="text-black fst-italic fw-semibold">@(Model.FechaPago?.ToString("dd/MM/yyyy") ?? "Sin abonar")
+                </p>
+            </div>
+        </div>
+
+        <hr class="bg-dark" style="height: 1px; border: none;" />
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <h5 class="text-primary fw-bold">💰 Importe</h5>
+                <p class="text-black fst-italic fw-semibold">$@Model.Importe</p>
+            </div>
+            <div class="col-md-6">
+                <h5 class="text-primary fw-bold">📝 Detalle</h5>
+
+                <div id="detalle-view">
+                    <p class="text-black fst-italic fw-semibold">
+                        @if (Model.Detalle == "")
+                        {
+                            <span>Sin detalle</span>
+                        }
+                        else
+                        {
+                            @Model.Detalle
+
+                        }
+                    </p>
+                    <div class="d-flex justify-content-center">
+                        @if (Model.Estado != "Pagado")
+                        {
+                            <button class="text-center btn btn-secondary mt-1" disabled>✏️ Editar</button>
+                        }
+                        else
+                        {
+                            <button class="text-center btn btn-primary mt-1" onclick="mostrarEditor()">✏️ Editar</button>
+                        }
+                    </div>
+                </div>
+
+                <div id="detalle-edit" style="display: none;">
+                    <form asp-action="EditarDetalle" method="post">
+                        <input type="hidden" name="id" value="@Model.IdPago" />
+                        <textarea name="detalle" class="form-control">@Model.Detalle</textarea>
+                        <div class="mt-2">
+                            <button type="submit" class="btn btn-success">💾 Guardar</button>
+                            <button type="button" class="btn btn-secondary" onclick="cancelarEditor()">❌
+                                Cancelar</button>
+                        </div>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+        <hr class="bg-dark" style="height: 1px; border: none;" />
+
+        <div class="row mb-3">
+            <div class="col-md-6">
+                <h5 class="text-primary fw-bold">📌 Estado</h5>
+                @if (Model.Estado == "Anulado")
+                {
+                    <p class="text-danger fst-italic fw-bold">@Model.Estado</p>
+                }
+                else if (Model.Estado == "Pagado")
+                {
+                    <p class="text-success fst-italic fw-bold">@Model.Estado</p>
+                }
+                else
+                {
+                    <p class="text-black fst-italic fw-bold">@Model.Estado</p>
+                }
+            </div>
+            <div class="col-md-6">
+                <h5 class="text-primary fw-bold">👤 Creado por</h5>
+                <p class="text-black fst-italic fw-semibold">@Model.NyAUser</p>
+            </div>
+        </div>
+
+        <hr class="bg-dark" style="height: 1px; border: none;" />
+
+        <div class="row mb-12 d-flex justify-content-center">
+            <div class="col-md-12 text-center">
+                <h5 class="text-primary fw-bold">👤 Inquilino</h5>
+                <p class="text-black fst-italic fw-semibold">@Model.NyAInquilino</p>
+            </div>
+        </div>
+
+        <!-- Botones Abonar / Anular -->
+        <div class="d-flex justify-content-end gap-2 mt-4">
+            @if (Model.Estado == "Pendiente")
+            {
+                <button id="btn-abonar" class="btn btn-success" type="button" onclick="iniciarAbono()">💰 Abonar</button>
+
+
+                @if (User.IsInRole("administrador"))
+                {
+                    <form asp-action="Anular" method="post"
+                        id="form-anular">
+                        <input type="hidden" name="id" value="@Model.IdPago" />
+                        <button type="submit" id="btn-anular" class="btn btn-danger btn-eliminar">🗑️ Anular</button>
+                    </form>
+                }
+                else
+                {
+                    <span class="btn btn-danger" style="opacity: 0.5; cursor: not-allowed;"
+                        title="Usted no tiene permiso para realizar esta acción">
+                        🗑️ Anular
+                    </span>
+                }
+            }
+        </div>
+
+        <!-- Formulario de abono oculto -->
+        <div id="registroPago-container" class="mt-3" style="display: none;">
+            <form id="form-abonar" asp-action="RegistrarPago" method="post">
+                <input type="hidden" name="id" value="@Model.IdPago" />
+                <label class="text-dark fw-bold" for="">Detalle: </label>
+                <textarea name="detalle" class="form-control" id="detalle-abono-textarea"
+                    placeholder="Ingrese un detalle" required>@Model.Detalle</textarea>
+                <div class="d-flex gap-2 mt-2 justify-content-end">
+                    <button type="submit" class="btn btn-success">✅ Confirmar pago</button>
+                    <button type="button" class="btn btn-secondary" onclick="cancelarAbono()">❌ Cancelar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="d-flex justify-content-center mt-4">
+    <a class="btn btn-primary" asp-action="Listar">Volver al listado</a>
+</div>
+
+<script>
+    function mostrarEditor() {
+        document.getElementById('detalle-view').style.display = 'none';
+        document.getElementById('detalle-edit').style.display = 'block';
+    }
+
+    function cancelarEditor() {
+        document.getElementById('detalle-edit').style.display = 'none';
+        document.getElementById('detalle-view').style.display = 'block';
+    }
+
+    function iniciarAbono() {
+        document.getElementById('registroPago-container').style.display = 'block';
+        document.getElementById('btn-abonar').style.display = 'none';
+        document.getElementById('btn-anular').style.display = 'none';
+    }
+
+    function cancelarAbono() {
+        document.getElementById('registroPago-container').style.display = 'none';
+        document.getElementById('btn-abonar').style.display = 'inline-block';
+        document.getElementById('btn-anular').style.display = 'inline-block';
+    }
+</script>
+
+
+<!-- alert confimr -->
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Seleccionamos todos los botones con clase btn-eliminar
+        const botonesEliminar = document.querySelectorAll('.btn-eliminar');
+
+        botonesEliminar.forEach(function (boton) {
+            boton.addEventListener('click', function (e) {
+                e.preventDefault(); // Prevenimos el envío automático
+
+                const form = boton.closest('form'); // Obtenemos el formulario padre
+
+                Swal.fire({
+                    title: '¿Estás seguro?',
+                    text: "¿Seguro que deseas eliminar este propietario?",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Sí, eliminar',
+                    cancelButtonText: 'Cancelar'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        form.submit(); // Enviamos el formulario si confirma
+                    }
+                });
+            });
+        });
+    });
+</script>

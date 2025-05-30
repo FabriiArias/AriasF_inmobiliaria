@@ -4,40 +4,41 @@
     ViewData["Title"] = "Ingresar Propietario";
 }
 
-<!-- Toastr CSS -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
-<!-- jQuery y Toastr JS -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
 <h1 class="text-center p-3">Ingresar nuevo propietario</h1>
 
 <form asp-action="Insertar">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="d-flex flex-column gap-2 justify-content-center align-items-center w-50 mx-auto">
 
         <div class="dni w-100">
             <label asp-for="DNIPropietario" class="form-label">DNI</label>
             <input asp-for="DNIPropietario" class="form-control" placeholder="Ingrese el DNI del propietario" required />
+            <span asp-validation-for="DNIPropietario" class="text-danger"></span>
         </div>
 
         <div class="nombre w-100">
             <label asp-for="Nombre" class="form-label">Nombre</label>
             <input asp-for="Nombre" class="form-control" placeholder="Ingrese el nombre del propietario" required />
+            <span asp-validation-for="Nombre" class="text-danger"></span>
         </div>
 
         <div class="apellido w-100">
             <label asp-for="Apellido" class="form-label">Apellido</label>
             <input asp-for="Apellido" class="form-control" placeholder="Ingrese el apellido del propietario" required />
+            <span asp-validation-for="Apellido" class="text-danger"></span>
         </div>
 
         <div class="celular w-100">
             <label asp-for="Celular" class="form-label">Teléfono</label>
             <input asp-for="Celular" class="form-control" placeholder="Ingrese el teléfono del propietario" required />
+            <span asp-validation-for="Celular" class="text-danger"></span>
         </div>
 
         <div class="email w-100">
             <label asp-for="Email" class="form-label">Email</label>
             <input asp-for="Email" class="form-control" placeholder="Ingrese el email del propietario" required type="email" />
+            <span asp-validation-for="Email" class="text-danger"></span>
         </div>
 
         <div class="w-100 text-center mt-4">
@@ -48,18 +49,29 @@
     </div>
 </form>
 
-<script>
-    $(document).ready(function () {
-        var mensaje = '@TempData["SuccessMessage"]';
-        if (mensaje) {
-            toastr.success(mensaje, 'Propietario agregado con éxito', { 
-                timeOut: 3000,
-                progressBar: true,
-                positionClass: 'toast-top-right',
-                onHidden: function() { 
-                    window.location.href = '@Url.Action("Listar", "Propietario")'; // Redirige cuando termine
-                }
-            });
-        }
-    });
-</script>
+
+@if (TempData["Mensaje"] != null)
+{
+    <script>
+        Swal.fire({
+            title: '¡Éxito!',
+            text: '@TempData["Mensaje"]',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = "/Propietario/Listar";
+            }
+        });
+    </script>
+}else if (TempData["Error"] != null)
+{
+    <script>
+        Swal.fire({
+            title: '¡Error!',
+            text: '@TempData["Error"]',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    </script>
+}

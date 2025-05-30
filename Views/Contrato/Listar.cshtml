@@ -8,79 +8,274 @@
     <a class="btn btn-success" asp-action="Crear">Agregar nuevo contrato</a>
 </div>
 
-<table class="table">
-    <thead class="text-black bg-light bg-gradient">
-        <tr class="text-center">
-            <th scope="col">Id</th>
-            <th scope="col">Inmueble</th>
-            <th scope="col">Inquilino</th>
-            <th scope="col">Estado</th>
-            <th scope="col">Fecha Inicio</th>
-            <th scope="col">Fecha Fin</th>
-            <th scope="col">Monto mensual</th>
-            <th scope="col">Acciones</th>
-        </tr>
-    </thead>
-    <tbody class="text-light align-middle bg-table-p bg-gradient">
-        @foreach (var c in Model)
-        {
+<style>
+    .filtro-container {
+        display: flex;
+        justify-content: center;
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+    }
+
+    .filtro-form {
+        flex: 1 1 30%;
+        max-width: 33%;
+        min-width: 220px;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 0.5rem;
+        border: 1px solid #dee2e6;
+    }
+
+    .filtro-form label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-size: 0.95rem;
+        font-weight: 500;
+        color: #333;
+    }
+
+    .filtro-form input {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    .filtro-form button {
+        display: block;
+        margin: 0.5rem auto 0;
+        padding: 0.4rem 1.2rem;
+        font-size: 0.9rem;
+    }
+</style>
+
+<div class="d-flex justify-content-center mb-3">
+    <button id="toggleFiltrosBtn" class="btn btn-primary">Mostrar filtros</button>
+</div>
+
+<!-- Filtros -->
+<div id="filtroContainer" class="filtro-container d-none">
+
+    <form asp-action="FiltrarPorInmueble" method="get" class="filtro-form">
+        <label for="inmuebleId" class="form-label">Inmueble</label>
+        <select id="inmuebleId" name="inmuebleId" class="form-control" style="width: 100%;">
+            <!-- Opciones aquí -->
+        </select>
+        <button type="submit" class="btn btn-outline-primary mt-2">Buscar</button>
+    </form>
+
+    <form asp-action="FiltrarPorFechas" method="get" class="filtro-form">
+        <label for="">Fechas de un contrato en vigencia</label>
+        <label for="fechaInicio">Fecha Inicio</label>
+        <input type="date" id="fechaInicio" name="fechaInicio" class="form-control" required />
+
+        <label for="fechaFin">Fecha Fin</label>
+        <input type="date" id="fechaFin" name="fechaFin" class="form-control" required />
+
+        <button type="submit" class="btn btn-outline-primary mt-2">Buscar</button>
+    </form>
+
+    @using (Html.BeginForm("FiltrarPorFinalizacion", "Contrato", FormMethod.Get))
+    {
+        <div class="form-group">
+            <label for="dias">Contratos que finalizan en:</label>
+            <select name="dias" id="dias" class="form-control">
+                <option value="">-- Seleccionar --</option>
+                <option value="30">30 días</option>
+                <option value="60">60 días</option>
+                <option value="90">90 días</option>
+                <option value="">Personalizado</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="diasPersonalizados">Días personalizados:</label>
+            <input type="number" name="diasPersonalizados" id="diasPersonalizados" class="form-control"
+                placeholder="Ej: 45" />
+        </div>
+
+        <button type="submit" class="btn btn-primary">Buscar</button>
+    }
+
+    <div class="d-flex justify-content-center mb-3 gap-2" style="flex-basis: 100%;">
+        <a class="btn btn-sm btn-secondary" asp-area="" asp-controller="Contrato" asp-action="Listar">Limpiar
+            filtros</a>
+    </div>
+</div>
+
+
+@if (!Model.Any())
+{
+    <div class="alert alert-warning text-center" role="alert">
+        No se encontraron contratos que coincidan con los criterios de búsqueda.
+    </div>
+
+}
+else
+{
+
+    <table class="table">
+        <thead class="text-black bg-light bg-gradient">
             <tr class="text-center">
-                <td>@c.IdContrato</td>
-                <td>
-                    @if (!string.IsNullOrEmpty(c.Portada))
-                    {
-                        var idPortada = $"portada-{c.IdContrato}";
-                        var idTexto = $"texto-portada-{c.IdContrato}";
-                        <div class="d-flex flex-column">
-                            <p class="m-0 p-0">Direccion: @c.Direccion</p>
-                            <a href="javascript:void(0)" class="text-light fw-bold"
-                                onclick="togglePortada('@idPortada', '@idTexto')" id="@idTexto">Mostrar Portada</a>
-                        </div>
-                        <div id="@idPortada" style="display: none; margin-top: 15px;">
-                            <img src="@c.Portada" alt="Portada del inmueble" class="img-fluid rounded" />
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="d-flex flex-column align-items-center">
-                            <p class="m-0 p-0">Direccion: @c.Direccion</p>
-                            <p class="m-0 p-0">Sin portada</p>
-                        </div>
-                    }
-                </td>
-                <td>@c.NyAInquilino</td>
-                <td>
-                    @if (c.Estado == "Vigente")
-                    {
-                        <p class="text-success fw-bold m-0">Vigente</p>
-                    }
-                    else if (c.Estado == "Pendiente_anulacion")
-                    {
-                        <p class="fw-bold m-0" style="color: rgb(128, 128, 39);">Pendiente a Anular</p>
-                    }
-                    else if (c.Estado == "Anulado")
-                    {
-                        <p class="text-danger fw-bold m-0">Anulado</p>
-                    }
-                    else if (c.Estado == "Finalizado")
-                    {
-                        <p class="fw-bold m-0" style="color: rgb(0, 0, 0);">Finalizado</p>
-                    }
-
-                </td>
-                <td>@c.FechaInicio.ToString("dd/MM/yyyy")</td>
-                <td>@c.FechaFin.ToString("dd/MM/yyyy")</td>
-                <td>$@c.MontoMensual</td>
-                <td>
-                    <a class="btn btn-primary" asp-action="Detalle" title="Detalles" asp-route-id="@c.IdContrato">📜 Detalles</a>
-                   
-                </td>
+                <th scope="col">Id</th>
+                <th scope="col">Inmueble</th>
+                <th scope="col">Inquilino</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Fecha Inicio</th>
+                <th scope="col">Fecha Fin</th>
+                <th scope="col">Monto mensual</th>
+                <th scope="col">Acciones</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody class="text-light align-middle bg-table-p bg-gradient">
+            @foreach (var c in Model)
+            {
+                <tr class="text-center">
+                    <td>@c.IdContrato</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(c.Portada))
+                        {
+                            var idPortada = $"portada-{c.IdContrato}";
+                            var idTexto = $"texto-portada-{c.IdContrato}";
+                            <div class="d-flex flex-column">
+                                <p class="m-0 p-0">Direccion: @c.Direccion</p>
+                                <a href="javascript:void(0)" class="text-light fw-bold"
+                                    onclick="togglePortada('@idPortada', '@idTexto')" id="@idTexto">Mostrar Portada</a>
+                            </div>
+                            <div id="@idPortada" style="display: none; margin-top: 15px;">
+                                <img src="@c.Portada" alt="Portada del inmueble" class="img-fluid rounded" />
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="d-flex flex-column align-items-center">
+                                <p class="m-0 p-0">Direccion: @c.Direccion</p>
+                                <p class="m-0 p-0">Sin portada</p>
+                            </div>
+                        }
+                    </td>
+                    <td>@c.NyAInquilino</td>
+                    <td>
+                        @if (c.Estado == "Vigente")
+                        {
+                            <p class="text-success fw-bold m-0">Vigente</p>
+                        }
+                        else if (c.Estado == "Pendiente_anulacion")
+                        {
+                            <p class="fw-bold m-0" style="color: rgb(128, 128, 39);">Pendiente a Anular</p>
+                        }
+                        else if (c.Estado == "Anulado")
+                        {
+                            <p class="text-danger fw-bold m-0">Anulado</p>
+                        }
+                        else if (c.Estado == "Finalizado")
+                        {
+                            <p class="fw-bold m-0" style="color: rgb(0, 0, 0);">Finalizado</p>
+                        }
+                    </td>
+                    <td>@c.FechaInicio.ToString("dd/MM/yyyy")</td>
+                    <td>@c.FechaFin.ToString("dd/MM/yyyy")</td>
+                    <td>$@c.MontoMensual</td>
+                    <td>
+                        <div class="d-flex justify-content-center gap-2 flex-column ">
 
-<!-- Script para mostrar la portada -->
+                            <a class="btn btn-primary" asp-action="Detalle" title="Detalles" asp-route-id="@c.IdContrato">📜
+                                Detalles</a>
+                            @if (c.Estado == "Vigente")
+                            {
+
+                                <a class="btn btn-success" asp-controller="Pago" asp-action="Crear"
+                                    asp-route-id="@c.IdContrato" title="Crear pago">
+                                    💰 Nuevo pago
+                                </a>
+                            }
+                        </div>
+
+
+                    </td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <!-- cosoo  --->
+
+    @if (ViewBag.TotalPaginas > 1)
+    {
+        <nav aria-label="Paginación">
+            <ul class="pagination justify-content-center">
+                @for (int i = 1; i <= ViewBag.TotalPaginas; i++)
+                {
+                    var routeValues = new Dictionary<string, object>
+                {
+                { "pagina", i },
+                { "fechaInicio", ViewBag.FechaInicio },
+                { "fechaFin", ViewBag.FechaFin }
+                };
+
+                    <li class="page-item @(i == ViewBag.PaginaActual ? "active" : "")">
+                        <a class="page-link" href="@Url.Action("FiltrarPorFechas", routeValues)">@i</a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+
+
+}
+<!-- select 2 -->
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#inmuebleId').select2({
+                placeholder: 'Buscar inmueble por dirección...',
+                minimumInputLength: 1,
+                ajax: {
+                    url: '/Inmueble/GetAllInmueblesSelect2',
+                    dataType: 'json',
+                    delay: 250,
+                    data: function (params) {
+                        return { term: params.term };
+                    },
+                    processResults: function (data) {
+                        return { results: data };
+                    },
+                    cache: true
+                },
+                language: {
+                    inputTooShort: () => '<span class="text-black">Ingrese al menos 1 caracter</span>',
+                    noResults: () => '<span class="text-black">No se encontraron resultados</span>',
+                    searching: () => '<span class="text-black">Buscando...</span>'
+                },
+                escapeMarkup: function (markup) {
+                    return markup;
+                },
+                templateResult: function (data) {
+                    if (data.loading) return data.text;
+                    return $('<span class="text-black">' + data.text + '</span>');
+                },
+                templateSelection: function (data) {
+                    return $('<span class="text-black">' + data.text + '</span>');
+                }
+            });
+
+            // Cuando seleccionas un inmueble, actualiza el campo oculto con el id
+            $('#inmuebleId').on('select2:select', function (e) {
+                const idInmueble = e.params.data.id;
+                $('#hiddenInmuebleId').val(idInmueble);
+            });
+
+            // Opcional: si quieres limpiar el campo oculto al limpiar la selección
+            $('#inmuebleId').on('select2:clear', function () {
+                $('#hiddenInmuebleId').val('');
+            });
+        });
+    </script>
+}
+
+
+
 <script>
     function togglePortada(portadaId, textoId) {
         var portadaDiv = document.getElementById(portadaId);
@@ -94,4 +289,13 @@
             textoPortada.innerHTML = "Mostrar Portada";
         }
     }
+
+    const toggleBtn = document.getElementById("toggleFiltrosBtn");
+    const filtroContainer = document.getElementById("filtroContainer");
+
+    toggleBtn.addEventListener("click", () => {
+        const visible = !filtroContainer.classList.contains("d-none");
+        filtroContainer.classList.toggle("d-none");
+        toggleBtn.textContent = visible ? "Mostrar filtros" : "Cerrar filtros";
+    });
 </script>

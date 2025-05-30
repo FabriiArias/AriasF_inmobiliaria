@@ -114,7 +114,7 @@
                 <div class="col-md-6">
                     <h5 class="text-primary fw-bold">📅 Fecha inicio de la Anulacion</h5>
                     <p class="text-black
-                                    <p class=" text-black fst-italic fw-semibold">
+                                            <p class=" text-black fst-italic fw-semibold">
                         @Model.FechaInicioAnulacion?.ToString("dd/MM/yyyy")</p>
                 </div>
             </div>
@@ -134,9 +134,22 @@
             <a class="btn btn-success" asp-action="Renovar" asp-route-id="@Model.IdContrato">♻️ Renovar</a>
             @if (Model.Estado == "Vigente")
             {
-                <a class="btn btn-danger" asp-action="AnularVista" title="Anular" asp-route-id="@Model.IdContrato">🗑️
-                    Anular</a>
+                if (User.IsInRole("administrador"))
+                {
+                    <a class="btn btn-danger" asp-action="AnularVista" title="Anular" asp-route-id="@Model.IdContrato">🗑️
+                        Anular</a>
+                }
+                else
+                {
+                    <span class="btn btn-danger" style="opacity: 0.5; cursor: not-allowed;"
+                        title="Usted no tiene permiso para realizar esta acción">
+                        🗑️ Anular
+                    </span>
+
+                }
             }
+
+
         </div>
     </div>
 </div>
@@ -162,3 +175,4 @@
         }
     }
 </script>
+

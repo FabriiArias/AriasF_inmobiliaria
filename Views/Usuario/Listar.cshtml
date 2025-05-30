@@ -1,0 +1,70 @@
+@model IEnumerable<InmobiliariaApp.Models.Usuario>
+@using System.Security.Claims
+
+@{
+    ViewData["Title"] = "Listar usuarios";
+    var usuarioLogueadoId = User.FindFirst("IdUsuario")?.Value;
+
+}
+
+<h1 class="text-center p-3">Listado de usuarios</h1>
+
+<div class="d-flex justify-content-center mb-3 gap-2">
+    @if (User.IsInRole("administrador"))
+    {
+        <a class="btn btn-success" asp-action="Crear">Agregar nuevo usuario</a>
+    }
+    else
+    {
+        <span class="btn btn-success disabled" style="opacity: 0.5; cursor: not-allowed;"
+              title="Usted no tiene permiso para crear usuarios">
+            Agregar nuevo usuario
+        </span>
+    }
+</div>
+
+<table class="table">
+    <thead class="text-black bg-light bg-gradient">
+        <tr class="text-center">
+            <th>Email</th>
+            <th>Nombre</th>
+            <th>Apellido</th>
+            <th>Rol</th>
+            <th>Contacto</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody class="text-light align-middle bg-table-p bg-gradient">
+        @foreach (var usuario in Model)
+        {
+            <tr class="text-center">
+                <td>@usuario.Email</td>
+                <td>@usuario.Nombre</td>
+                <td>@usuario.Apellido</td>
+                <td>@usuario.Rol</td>
+                <td>@usuario.Contacto</td>
+                <td>
+                    <a class="btn btn-secondary" asp-action="Detalle" asp-route-id="@usuario.IdUsuario" title="Detalles">📜</a>
+                    <a class="btn btn-primary" asp-action="Editar" asp-route-id="@usuario.IdUsuario" title="Editar">✏️</a>
+
+                    @if (User.IsInRole("administrador"))
+                    {
+                        <form asp-action="Eliminar" method="post" style="display:inline;">
+                            <input type="hidden" name="id" value="@usuario.IdUsuario" />
+                            <button title="Eliminar" type="submit" class="btn btn-danger"
+                                    onclick="return confirm('¿Seguro que deseas eliminar este usuario?');">🗑️</button>
+                        </form>
+                    }
+                    else
+                    {
+                        <button class="btn btn-danger" disabled title="No tiene permiso para eliminar usuarios">🗑️</button>
+                    }
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="d-flex justify-content-center mb-3 gap-2">
+    <a class="btn btn-primary" asp-action="Detalle" asp-route-id="@usuarioLogueadoId" title="Volver a mi perfil">Volver</a>
+</div>

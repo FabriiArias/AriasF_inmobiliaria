@@ -1,0 +1,87 @@
+@model InmobiliariaApp.Models.Usuario
+@using System.Security.Claims;
+@{
+    ViewData["Title"] = "Editar Usuario";
+    var rol = User.FindFirst(ClaimTypes.Role)?.Value;
+    var usuarioLogueadoEmail = User.FindFirst(ClaimTypes.Name)?.Value;
+    var usuarioLogueadoId = User.FindFirst("IdUsuario")?.Value;
+
+    bool esAdministrador = rol == "administrador";
+    bool esUsuarioActual = usuarioLogueadoId == Model.IdUsuario.ToString();
+}
+
+<h2>Editar Usuario</h2>
+
+<!-- Formulario para actualizar datos del usuario -->
+<form asp-action="Actualizar" enctype="multipart/form-data">
+    <input type="hidden" asp-for="IdUsuario" />
+
+    <div class="form-group">
+        <label asp-for="Nombre"></label>
+        <input asp-for="Nombre" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Apellido"></label>
+        <input asp-for="Apellido" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Email"></label>
+        <input asp-for="Email" class="form-control" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Password"></label>
+        <input asp-for="Password" type="password" class="form-control" required autocomplete="new-password" />
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Contacto"></label>
+        <input asp-for="Contacto" class="form-control" />
+    </div>
+
+    @if (esAdministrador)
+    {
+        <div class="form-group">
+            <label asp-for="Rol"></label>
+            <select asp-for="Rol" class="form-control">
+                <option value="administrador">Administrador</option>
+                <option value="empleado">Empleado</option>
+            </select>
+        </div>
+    }
+    else
+    {
+        <!-- Campo oculto para empleados -->
+        <input type="hidden" asp-for="Rol" value="empleado" />
+    }
+
+    <div class="form-group">
+        <label for="AvatarFile">Nuevo Avatar</label>
+        <input type="file" name="AvatarFile" class="form-control" />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+    <a asp-action="Detalle" asp-route-id="@usuarioLogueadoId" class="btn btn-secondary">Cancelar</a>
+</form>
+
+<!-- Muestra de avatar actual y botón para eliminar -->
+@if (!string.IsNullOrEmpty(Model.Avatar))
+{
+    <div class="form-group mt-3">
+        <label>Avatar actual:</label><br />
+        <img src="@Model.Avatar" alt="Avatar" width="100" />
+
+        <form asp-controller="Usuario" asp-action="BorrarAvatar" method="post" class="d-inline-block mt-2">
+            <input type="hidden" name="id" value="@Model.IdUsuario" />
+            <button type="submit" class="btn btn-danger btn-sm">Eliminar Avatar</button>
+        </form>
+    </div>
+}
+else
+{
+    <div class="form-group mt-3">
+        <p>No tiene avatar</p>
+    </div>
+}
